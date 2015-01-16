@@ -177,7 +177,7 @@ interface HasNetwork {
   int selected(int x, int y, int xOffset, int yOffset);
 }
 
-class KDiag extends BaseControlAutomation implements IControlAutomaton {
+class KDiag extends BaseControlAutomaton implements IControlAutomaton {
     
   class UncertainY implements IFreqStrategy {
     float noise;
