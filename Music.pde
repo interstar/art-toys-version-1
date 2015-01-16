@@ -59,4 +59,13 @@ class NoteCalculator {
 
 }
 
-
+class ScaleBasedFreqStrategy implements IFreqStrategy {
+  NoteCalculator nc;
+  float high;
+  ScaleBasedFreqStrategy(float h) { high = h; }
+  
+  float rawFreq(float y) { return nc.heightToFreq(y,high); }
+  float corrected(float y) { return nc.current.transform((int)
+    
+  
+}
