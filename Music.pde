@@ -64,8 +64,8 @@ class ScaleBasedFreqStrategy implements IFreqStrategy {
   float high;
   ScaleBasedFreqStrategy(float h) { high = h; }
   
-  float rawFreq(float y) { return nc.heightToFreq(y,high); }
-  float corrected(float y) { return nc.current.transform((int)
+  float rawFreq(float y) { return (float)nc.heightToFreq((int)y,(int)high); }
+  float corrected(float f) { return f; }
     
   
 }
