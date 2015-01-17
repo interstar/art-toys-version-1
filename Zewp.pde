@@ -10,7 +10,7 @@ class Zewp extends BaseActor implements Mover {
     boolean alive;
 
     int app_width, app_height;
-    OSCParam osc;
+    ZewpOSCObservingInstrument inst;
 
     int newNote;
     
@@ -21,16 +21,16 @@ class Zewp extends BaseActor implements Mover {
     void setup(int id, float x, float y, float a, float len, float vel, int colour, int app_width, int app_height) { 
       this.id = id; 
       this.x = x;
-      this.y = y;
-      this.a = a;
+      this.y = y;      
       this.len = len;
       this.vel = vel;
+      this.set_angle(0);
       this.colour = colour;
       this.app_width = app_width;
       this.app_height = app_height;
       alive=true;
       newNote=0;
-      osc = new OSCParam("/channel"+this.id);
+      inst = new ZewpOSCObservingInstrument("/channel"+this.id);
       
       if (rnd.nextInt(100) < 50) {
           da = PI / 12;
@@ -156,7 +156,7 @@ class Zewp extends BaseActor implements Mover {
   float getFreq() { return height-(int)y; } 
   
   void sendOSCMessage() { 
-      osc.send(newNote,getFreq(),getX(),getFreq());
+      inst.changed(newNote,getFreq(),getX(),getFreq());
       newNote=0;
   }
   
@@ -173,7 +173,7 @@ class Zewp2 extends Zewp {
   float getFreq() { return freq; }
 
   void sendOSCMessage() { 
-      osc.send(newNote,getFreq(),getX(),getFreq());
+      inst.changed(newNote,getFreq(),getX(),getFreq());
       newNote=0;
   }
 
@@ -207,13 +207,34 @@ class Zewp2 extends Zewp {
 
 class ZewpFactory implements IBlockWorldFactory {
   int noBlocks, noZewps;
-  ZewpFactory(int noblocks, int nozewps) {
+  String backImg;
+  ZewpFactory(String imgName, int noblocks, int nozewps) {
     noBlocks = noblocks;
     noZewps = nozewps;
+    backImg = imgName;
+  }
+  
+  IBlockWorld makeWorld() {
+    ArrayList<Block> blocks = new ArrayList<Block>();
+    ArrayList<Zewp> zewps = new ArrayList<Zewp>();
+
+    PImage im = loadImage(backImg);
+    int n;  
+    String name;
+    for (int i=0;i<12;i++) {
+       Block b = new BasicBlock(rnd.nextInt(im.width),rnd.nextInt(im.height-20)); 
+       blocks.add(b);
+    }
+    
+    for (int i=0;i<6;i++) {
+       zewps.add(new Zewp(i, rnd.nextInt(im.width),rnd.nextInt(im.height-20), 0, 10, 2, color(255,255,200), im.width, im.height));
+    }
+    
+    return new ZewpWorld(backImg,blocks,zewps,new ScaleBasedFreqStrategy(im.height));
   }
 }
 
-class ZewpWorld implements IControlAutomaton, IBlockWorld {
+class ZewpWorld extends BaseControlAutomaton implements IControlAutomaton, IBlockWorld {
 
   ArrayList<Block> blocks;
   ArrayList<Mover> zewps;
@@ -222,12 +243,72 @@ class ZewpWorld implements IControlAutomaton, IBlockWorld {
   boolean blockSelected;
   Random rnd;  
   
-  int NoZewps;
   PImage backImg;
-
-  ZewpWorld(String backImgName, int noZewps, int noBlocks) {
+  int wide=100;
+  int high=100;
   
+  ArrayList<ObservingInstrument> instruments = new ArrayList<ObservingInstrument>();
+  IFreqStrategy freqStrategy;
+
+  ZewpWorld(String backImgName, ArrayList<Block> bs, ArrayList<Zewp> zs, IFreqStrategy fs) {
+    blocks = new ArrayList<Block>();
+    zewps = new ArrayList<Mover>();
+    for (Block b : bs) { blocks.add(b); }
+    for (Mover z : zs) { zewps.add(z); }
+    backImg = loadImage(backImgName);
+    wide=backImg.width;
+    high=backImg.height;  
   }
 
+  void sizeInSetup() { size(wide,high); }
+  void setIFreqStrategy(IFreqStrategy fs) { freqStrategy = fs; }
+  IFreqStrategy getIFreqStrategy() { return freqStrategy; }
+  
+  void struck(int x, int y) { }
+  void reset() {
+
+  };
+
+  void nextStep() {
+    for (Mover z : zewps) { 
+      z.interact(blocks,zewps);
+    }  
+  }
+
+  void addObservingInstrument(ObservingInstrument oi) {
+    instruments.add(oi);
+  }
+  
+  void draw() {
+    background(backImg);
+    for (Block g : blocks) { g.draw(); }
+    for (Mover z : zewps) { 
+      z.draw(); 
+    }  
+  }
+
+  void keyPressed(int k) {
+  switch (key) {    
+    case '0' : 
+      noteCalculator.setCurrent("chromatic"); break;
+    case '1' : 
+      noteCalculator.setCurrent("major"); break;
+    case '2' : 
+      noteCalculator.setCurrent("minor"); break;
+    case '3' : 
+      noteCalculator.setCurrent("diminished"); break;
+    case '4' : 
+      noteCalculator.setCurrent("arab"); break;
+    case '5' : 
+      noteCalculator.setCurrent("debussy"); break;
+    case '6' : 
+      noteCalculator.setCurrent("gypsy"); break;
+    case '7' : 
+      noteCalculator.setCurrent("pent1"); break;
+    case '8' : 
+      noteCalculator.setCurrent("pent2"); break;
+    }    
+  }
+  
 }
 

@@ -77,7 +77,7 @@ class OSCObservingInstrument implements ObservingInstrument {
 
 }
 
-class ZewpOSCObservingInstrument implements ObservingInstrument, ObservingController {
+class ZewpOSCObservingInstrument implements ObservingInstrument {
 
   class OSCParam {
     String path;
@@ -104,6 +104,8 @@ class ZewpOSCObservingInstrument implements ObservingInstrument, ObservingContro
   OscP5 oscP5;
   NetAddress myRemoteLocation;
   OSCParam osc;
+ 
+  ZewpOSCObservingInstrument(String path) { setupOSC(path);  } 
   
   void setupOSC(String path) {
     oscP5 = new OscP5(this,9001);
