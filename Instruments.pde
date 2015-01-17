@@ -10,6 +10,8 @@ AudioOutput out;
 
 interface ObservingInstrument {
   void playNote(float freq);
+  void changed(String... params);
+  void changed(float... params);  
 } 
 
 
@@ -43,8 +45,14 @@ class MinimObservingInstrument implements ObservingInstrument {
   
   void playNote(float freq) {
     out.playNote( 0.0, 0.6, new SineInstrument( freq ));
-  }  
+  }
+
+  void changed(String... params) {};
+  void changed(float... params) {};  
+  
 }
+
+
 
 class OSCObservingInstrument implements ObservingInstrument {
   OscP5 oscP5;
@@ -63,4 +71,48 @@ class OSCObservingInstrument implements ObservingInstrument {
     myMessage.add(0);
     oscP5.send(myMessage, myRemoteLocation);   
   }
+  
+  void changed(String... params){};
+  void changed(float... params){};  
+
+}
+
+class ZewpOSCObservingInstrument implements ObservingInstrument, ObservingController {
+
+  class OSCParam {
+    String path;
+    OSCParam(String path) { this.path = path; }
+    
+    void send(String... params) {  
+      OscMessage myMessage = new OscMessage(path);
+      for (int i=0; i<params.length;i++) {
+        myMessage.add(params[i]);
+      }
+      oscP5.send(myMessage, myRemoteLocation);   
+    } 
+  
+    void send(float... params) {  
+      OscMessage myMessage = new OscMessage(path);
+      for (int i=0; i<params.length;i++) {
+        myMessage.add(params[i]);
+      }
+      oscP5.send(myMessage, myRemoteLocation);   
+    }
+  }
+
+
+  OscP5 oscP5;
+  NetAddress myRemoteLocation;
+  OSCParam osc;
+  
+  void setupOSC(String path) {
+    oscP5 = new OscP5(this,9001);
+    myRemoteLocation = new NetAddress("127.0.0.1",9004);
+    osc = new OSCParam(path);
+  }
+  
+    
+  void changed(String... params) { osc.send(params); }
+  void changed(float... params)  { osc.send(params); }
+  void playNote(float freq) { }
 }

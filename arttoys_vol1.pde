@@ -2,8 +2,11 @@
 Camouse camouse;
 IControlAutomaton toy;
 
+IBlockWorldFactory fac = new ZewpFactory(12,10);
+
 void setup() {
-  toy = new  KDiag(240,15,6);
+  //toy = new KDiag(240,15,6);
+  toy = fac.makeWorld();
   toy.reset();
   
   toy.sizeInSetup();
