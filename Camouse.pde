@@ -1,5 +1,13 @@
 import processing.video.*;
 
+interface ICamouseUser {
+  void drawVideo();
+  void drawCursor();
+  void camouseStep();
+  PApplet getApp();
+  
+}
+
 class Camouse {
 
   int numPixels;

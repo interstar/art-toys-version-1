@@ -177,7 +177,7 @@ interface HasNetwork {
   int selected(int x, int y, int xOffset, int yOffset);
 }
 
-class KDiag extends BaseControlAutomaton implements IControlAutomaton {
+class KDiag extends BaseControlAutomaton implements IControlAutomaton, IMusicToy, ICamouseUser {
     
   class UncertainY implements IFreqStrategy {
     float noise;
@@ -197,15 +197,18 @@ class KDiag extends BaseControlAutomaton implements IControlAutomaton {
     }
   }
 
-  
   Network network;
   IFreqStrategy fs = new IdentityFreqStrategy();
   ArrayList<ObservingInstrument> obis = new ArrayList<ObservingInstrument>();
 
   int currentNode; 
   int wait = 20;
+
+  Camouse camouse;
+  PApplet pa;
   
-  KDiag(int aRad, int noNodes, int arcsPerNode) { 
+  KDiag(PApplet pa, int aRad, int noNodes, int arcsPerNode) {
+    this.pa = pa; 
     recreateNetwork(aRad,noNodes,arcsPerNode); 
   }
   
@@ -284,6 +287,11 @@ class KDiag extends BaseControlAutomaton implements IControlAutomaton {
     size(640,480);  
   }
 
+  void drawVideo() {
+    camouse.draw();
+    image(camouse.getVideo(), 0, 0);
+  }
+
   void reset() {
     recreateNetwork(240, 15 ,6);
     setIFreqStrategy(new UncertainY(height,100));    
@@ -292,6 +300,15 @@ class KDiag extends BaseControlAutomaton implements IControlAutomaton {
   void setIFreqStrategy(IFreqStrategy fs) { this.fs = fs; }
   IFreqStrategy getIFreqStrategy() { return fs; }
 
+  void camouseStep() {}
+
+  void drawCursor() {
+      stroke(255);
+      fill(100,100,255,200);    
+      ellipse(camouse.x(), camouse.y(), 10, 10);
+  }
+
+  PApplet getApp() { return pa; }
 }
  
   

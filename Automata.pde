@@ -9,25 +9,12 @@ class IdentityFreqStrategy implements IFreqStrategy {
   float rawFreq(float y) { return y; }
 }
 
-interface IControlAutomaton {
-  void reset();
+interface IControlAutomaton extends IArtToy, IMusicToy {
   
   void start();
   void stop();
   boolean isPlaying();
-  void nextStep();
-  void draw();
 
-  //UI  
-  void struck(int x, int y); // UI produced something interesting at x, y ... automata needs to respond
-  void keyPressed(int k); // key pressed
-  
-  void addObservingInstrument(ObservingInstrument oi);
-
-  void sizeInSetup();  
-
-  void setIFreqStrategy(IFreqStrategy fs);
-  IFreqStrategy getIFreqStrategy();
   
 }
 
