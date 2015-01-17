@@ -227,7 +227,7 @@ class ZewpFactory implements IBlockWorldFactory {
     }
     
     for (int i=0;i<6;i++) {
-       zewps.add(new Zewp(i, rnd.nextInt(im.width),rnd.nextInt(im.height-20), 0, 10, 2, color(255,255,200), im.width, im.height));
+       zewps.add(new Zewp2(i, rnd.nextInt(im.width),rnd.nextInt(im.height-20), 0, 10, 2, color(255,255,200), im.width, im.height));
     }
     
     return new ZewpWorld(backImg,blocks,zewps,new ScaleBasedFreqStrategy(im.height));

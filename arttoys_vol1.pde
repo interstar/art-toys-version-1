@@ -14,7 +14,7 @@ void setup() {
   toy.reset();
   
   toy.sizeInSetup();
-  frameRate(20);
+
    
   toy.addObservingInstrument(new MinimObservingInstrument());
   toy.addObservingInstrument(new OSCObservingInstrument());  
