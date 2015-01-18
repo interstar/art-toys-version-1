@@ -95,6 +95,9 @@ class CamHarp implements IArtToy, ICamouseUser, IMusicToy {
     
     void addObservingInstrument(ObservingInstrument oi) { obins.add(oi); }
 
+    void mousePressed() {}
+    void mouseDragged() {}
+    void mouseReleased() {}
  
    
 }

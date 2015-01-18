@@ -30,7 +30,7 @@ class Zewp extends BaseActor implements Mover {
       this.app_height = app_height;
       alive=true;
       newNote=0;
-      inst = new ZewpOSCObservingInstrument("/channel"+this.id);
+      inst = new ZewpOSCObservingInstrument("127.0.0.1", 9004, "/channel"+this.id);
       
       if (rnd.nextInt(100) < 50) {
           da = PI / 12;
@@ -234,7 +234,7 @@ class ZewpFactory implements IBlockWorldFactory {
   }
 }
 
-class ZewpWorld extends BaseControlAutomaton implements IControlAutomaton, IBlockWorld {
+class ZewpWorld extends BaseControlAutomaton implements IControlAutomaton, IBlockWorld, IArtToy, IMusicToy {
 
   ArrayList<Block> blocks;
   ArrayList<Mover> zewps;
@@ -266,7 +266,7 @@ class ZewpWorld extends BaseControlAutomaton implements IControlAutomaton, IBloc
   
   void struck(int x, int y) { }
   void reset() {
-
+    
   };
 
   void nextStep() {
@@ -288,7 +288,7 @@ class ZewpWorld extends BaseControlAutomaton implements IControlAutomaton, IBloc
   }
 
   void keyPressed(int k) {
-  switch (key) {    
+  switch (key) {
     case '0' : 
       noteCalculator.setCurrent("chromatic"); break;
     case '1' : 
@@ -308,6 +308,28 @@ class ZewpWorld extends BaseControlAutomaton implements IControlAutomaton, IBloc
     case '8' : 
       noteCalculator.setCurrent("pent2"); break;
     }    
+  }
+
+  void mousePressed() {
+    for (Block g : blocks) {
+      if (g.hit(mouseX,mouseY)) {
+        println("Hit " + g);
+        blockSelected=true;
+        selectedBlock=g;
+        break;
+      }
+    }
+  }
+
+  void mouseDragged() {
+    if (blockSelected) {
+      selectedBlock.setX(mouseX-(selectedBlock.getWidth()/2));
+      selectedBlock.setY(mouseY-(selectedBlock.getHeight()/2));   
+    }  
+  }
+  
+  void mouseReleased() {
+    blockSelected = false;
   }
   
 }

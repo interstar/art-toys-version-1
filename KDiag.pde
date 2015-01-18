@@ -208,7 +208,9 @@ class KDiag extends BaseControlAutomaton implements IControlAutomaton, IMusicToy
   PApplet pa;
   
   KDiag(PApplet pa, int aRad, int noNodes, int arcsPerNode) {
-    this.pa = pa; 
+    this.pa = pa;
+    sizeInSetup();
+    camouse = new Camouse(pa); 
     recreateNetwork(aRad,noNodes,arcsPerNode); 
   }
   
@@ -236,6 +238,9 @@ class KDiag extends BaseControlAutomaton implements IControlAutomaton, IMusicToy
   }
   
   void nextStep() {
+
+    camouseStep();
+    
     if (!isPlaying()) { return; }
   
     if (frameCount % (1+wait) == 0) { 
@@ -254,12 +259,14 @@ class KDiag extends BaseControlAutomaton implements IControlAutomaton, IMusicToy
   }
   
   void draw() {
+    drawVideo();
     network.draw();
     Node cNode = network.nodes.get(currentNode);
     pushMatrix();
       translate(320,240);
       cNode.drawHighlighted();
-    popMatrix(); 
+    popMatrix();
+    drawCursor(); 
   }
 
   void struck(int x, int y) {
@@ -300,7 +307,10 @@ class KDiag extends BaseControlAutomaton implements IControlAutomaton, IMusicToy
   void setIFreqStrategy(IFreqStrategy fs) { this.fs = fs; }
   IFreqStrategy getIFreqStrategy() { return fs; }
 
-  void camouseStep() {}
+  void camouseStep() {
+      struck(camouse.x(),camouse.y());
+      println("camouse step");
+  }
 
   void drawCursor() {
       stroke(255);
@@ -309,6 +319,11 @@ class KDiag extends BaseControlAutomaton implements IControlAutomaton, IMusicToy
   }
 
   PApplet getApp() { return pa; }
+  
+  void mousePressed(){}
+  void mouseDragged(){}
+  void mouseReleased(){}
+
 }
  
   
