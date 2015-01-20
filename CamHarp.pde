@@ -1,5 +1,5 @@
 
-class Chime extends BaseActor {
+class Chime extends MusicActor implements Actor, IMusicToy {
   int rad,wide,high;
   Chime(int r, int x, int y, int h) {
     makeUid();
@@ -73,9 +73,7 @@ class CamHarp extends BaseMusicToy implements IAutomatonToy, ICamouseUser, IMusi
     void struck(int x, int y) {
       for (Chime c : chimes) {
         if (c.hit(x,y)) {
-          for (IObservingInstrument oi : obIns()) {
-            oi.playNote(freqStrat.corrected(freqStrat.rawFreq(c.y)));
-          }
+          playNote(freqStrat.corrected(freqStrat.rawFreq(c.y)));
         }
       }
     }

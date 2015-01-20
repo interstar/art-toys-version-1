@@ -3,7 +3,7 @@ interface IMover extends Actor {
   void interact(ArrayList<Actor> blocks, ArrayList<IMover> movers);
 }
 
-class Zewp extends BaseActor implements IMover, IMusicToy {
+class Zewp extends MusicActor implements IMover, IMusicToy {
     float a, da, dx, dy, len, vel, cos_a, sin_a;
     int colour;
     boolean alive;
@@ -11,13 +11,6 @@ class Zewp extends BaseActor implements IMover, IMusicToy {
     int app_width, app_height;
     int newNote;
     
-    IMusicToy innerMusicToy = new BaseMusicToy();
-    IFreqStrategy getFreqStrategy() { return innerMusicToy.getFreqStrategy(); }
-    void setFreqStrategy(IFreqStrategy fs) { innerMusicToy.setFreqStrategy(fs); }
-    void playNote(float freq) { innerMusicToy.playNote(freq); }
-    Iterator<IObservingInstrument> itObIns() { return innerMusicToy.itObIns(); }
-    ArrayList<IObservingInstrument> obIns() { return innerMusicToy.obIns(); }
-    void addObservingInstrument(IObservingInstrument oi) { innerMusicToy.addObservingInstrument(oi); }
     
     Zewp(int id, float x, float y, float a, float len, float vel, int colour, int app_width, int app_height, IMusicToy aMusicToy) {
       setup(id,x,y,a,len,vel,colour,app_width,app_height,aMusicToy);
@@ -53,8 +46,6 @@ class Zewp extends BaseActor implements IMover, IMusicToy {
       dy = sin_a * vel;
     }
 
-    int getX() { return (int)x; }
-    int getY() { return (int)y; }
 
     boolean look_ahead(ArrayList<IMover> zewps, ArrayList<Actor> glyphs) {
       /* return true if something ahead, otherwise, false */  
@@ -168,7 +159,6 @@ class Zewp extends BaseActor implements IMover, IMusicToy {
      newNote=0;
   }
   
-  
 }
 
 class Zewp2 extends Zewp {
@@ -245,7 +235,7 @@ class ZewpFactory implements IBlockWorldFactory {
   }
 }
 
-class ZewpWorld extends BaseControlAutomaton implements IControlAutomaton, IBlockWorld {
+class ZewpWorld extends BaseControlAutomaton implements IAutomatonToy, IBlockWorld {
 
   ArrayList<Actor> blocks;
   ArrayList<IMover> zewps;

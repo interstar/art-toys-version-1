@@ -6,7 +6,8 @@ interface IMusicToy {
   void addObservingInstrument(IObservingInstrument oi);
   ArrayList<IObservingInstrument> obIns();
   Iterator<IObservingInstrument> itObIns();
-  void playNote(float freq);  
+  void playNote(float freq);
+  float makeNote(float y);  
 }
 
 class BaseMusicToy implements IMusicToy {
@@ -19,12 +20,27 @@ class BaseMusicToy implements IMusicToy {
   ArrayList<IObservingInstrument> obIns() { return oins; }
   Iterator<IObservingInstrument> itObIns() { return oins.iterator(); }
   
+  float makeNote(float y) { return freqStrat.corrected(freqStrat.rawFreq(y)); }
+  
   void playNote(float freq) {
     for (IObservingInstrument oi : oins) {
+      println(oi + " playing " + freq);
       oi.playNote(freq);
     }
   }
+}
 
+
+abstract class MusicActor extends BaseActor implements IMusicToy, Actor {
+    IMusicToy innerMusicToy = new BaseMusicToy();
+    IFreqStrategy getFreqStrategy() { return innerMusicToy.getFreqStrategy(); }
+    void setFreqStrategy(IFreqStrategy fs) { innerMusicToy.setFreqStrategy(fs); }
+    float makeNote(float y) { innerMusicToy.makeNote(y); }
+    void playNote(float freq) { innerMusicToy.playNote(freq); }
+    Iterator<IObservingInstrument> itObIns() { return innerMusicToy.itObIns(); }
+    ArrayList<IObservingInstrument> obIns() { return innerMusicToy.obIns(); }
+    void addObservingInstrument(IObservingInstrument oi) { innerMusicToy.addObservingInstrument(oi); }
+    abstract boolean hit(int x, int y);  
 }
 
 interface IFreqStrategy {

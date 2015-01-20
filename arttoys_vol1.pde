@@ -6,14 +6,15 @@ Random rnd = new Random();;
 
 CamHarp makeCamHarp() {
   CamHarp h = new CamHarp(this);
-  h.addObservingInstrument(new MinimObservingInstrument());  
+  //h.addObservingInstrument(new MinimObservingInstrument());
+  h.addObservingInstrument(new OSCObservingInstrument("127.0.0.1", 9004, "/channel0"));  
   return h;
 }
 
 void reset() {
   //toy = new KDiag(this,240,15,6);
-  //toy = (new ZewpFactory("bg.png",12,10)).makeWorld();
-  toy = makeCamHarp();
+  toy = (new ZewpFactory("bg.png",12,10)).makeWorld();
+  //toy = makeCamHarp();
   toy.reset();
   toy.sizeInSetup();  
 }

@@ -10,7 +10,6 @@ AudioOutput out;
 OscP5 oscP5 = new OscP5(this,9001); // one, instantiated once  
 
 
-
 interface IObservingController {  
   void changed(String... params);
   void changed(float... params);
@@ -119,5 +118,6 @@ class OSCObservingInstrument extends BaseOSCInstrument implements IObservingInst
      oscP5.send( (new OscMessageFactory(path)).make(params), myRemoteLocation); 
   }
   
-  void playNote(float freq) { }
+  void playNote(float freq) { changed(1,freq,0,freq); }
+  
 }

@@ -213,6 +213,7 @@ class KDiag extends BaseControlAutomaton implements IAutomatonToy, IMusicToy, IC
   ArrayList<IObservingInstrument> obIns() { return innerMusicToy.obIns(); }
   void setFreqStrategy(IFreqStrategy fs) { innerMusicToy.setFreqStrategy(fs); }
   IFreqStrategy getFreqStrategy() { return innerMusicToy.getFreqStrategy(); }
+  float makeNote(float y) { innerMusicToy.makeNote(y); }
 
   
   void nextStep() {

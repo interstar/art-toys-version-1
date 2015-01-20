@@ -46,7 +46,7 @@ class Camouse {
 
   void draw() {
     if (video.available()) {
-      println("video available");
+      //println("video available");
       // When using video to manipulate the screen, use video.available() and
       // video.read() inside the draw() method so that it's safe to draw to the screen
       video.read(); // Read the new frame from the camera
@@ -84,7 +84,7 @@ class Camouse {
         previousFrame[i] = currColor;
 
         if (i==0) {
-          println(i, currColor, prevColor, diff, xs[changed], ys[changed]);
+          //println(i, currColor, prevColor, diff, xs[changed], ys[changed]);
         }
       }
 
@@ -103,7 +103,7 @@ class Camouse {
         ty = 0;
       }
     } else {
-      println("no video");      
+     // println("no video");      
     }
   }
 
