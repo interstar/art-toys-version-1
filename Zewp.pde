@@ -260,7 +260,7 @@ class ZewpWorld extends BaseControlAutomaton implements IControlAutomaton, IBloc
   
   IMusicToy innerMusicToy = new BaseMusicToy();
 
-  ZewpWorld(String backImgName, ArrayList<Block> bs, ArrayList<Zewp> zs) {
+  ZewpWorld(String backImgName, ArrayList<Actor> bs, ArrayList<Zewp> zs) {
     blocks = new ArrayList<Actor>();
     zewps = new ArrayList<IMover>();
     for (Actor b : bs) { blocks.add(b); }
