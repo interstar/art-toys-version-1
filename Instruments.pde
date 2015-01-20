@@ -7,6 +7,9 @@ import ddf.minim.ugens.*;
 Minim minim;
 AudioOutput out;
 
+OscP5 oscP5 = new OscP5(this,9001); // one, instantiated once  
+
+
 
 interface ObservingController {  
   void changed(String... params);
@@ -17,7 +20,7 @@ interface ObservingInstrument {
   void playNote(float freq);
 } 
 
-interface ObservingOSC {
+interface ObservingOSCController extends ObservingController {
   void setIP(String ip, int port);
   void setPath(String path);
   OscP5 getOscP5();
@@ -85,8 +88,7 @@ class OscMessageFactory {
 } 
 
 
-class BaseOSCInstrument implements ObservingOSC {
-  OscP5 oscP5 = new OscP5(this,9001);  
+abstract class BaseOSCInstrument implements ObservingOSCController {
   NetAddress myRemoteLocation;
   String path;
 
@@ -101,27 +103,10 @@ class BaseOSCInstrument implements ObservingOSC {
   
 }
 
-class OSCObservingInstrument extends BaseOSCInstrument implements ObservingInstrument, ObservingOSC, ObservingController {
-  String path;
 
-  OSCObservingInstrument(String s, int port) {
-    setIP(s,port); 
-  }
-
-  void playNote(float freq) {
-    OscMessage myMessage = (new OscMessageFactory("/pitch")).make(freq,0);
-    oscP5.send(myMessage, getRemoteLocation());   
-  }
+class OSCObservingInstrument extends BaseOSCInstrument implements ObservingInstrument, ObservingOSCController {
   
-  void changed(String... params){};
-  void changed(float... params){};  
-
-}
-
-class ZewpOSCObservingInstrument extends BaseOSCInstrument implements ObservingInstrument, ObservingController, ObservingOSC {
-  
-  ZewpOSCObservingInstrument(String ip, int port, String path) {
-    oscP5 = new OscP5(this,9001); 
+  OSCObservingInstrument(String ip, int port, String path) {
     setIP(ip,port);
     setPath(path);
   } 

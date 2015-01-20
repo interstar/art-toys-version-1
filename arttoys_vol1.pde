@@ -11,7 +11,7 @@ void reset() {
   toy.reset();
   toy.sizeInSetup();  
   toy.addObservingInstrument(new MinimObservingInstrument());
-  toy.addObservingInstrument(new OSCObservingInstrument("127.0.0.1",9004));  
+  toy.addObservingInstrument(new OSCObservingInstrument("127.0.0.1",9004,"/pitch"));  
 }
   
 

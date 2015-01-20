@@ -15,6 +15,8 @@ interface IArtToy {
 }
 
 interface IMusicToy {
-  void setIFreqStrategy(IFreqStrategy fs);
-  IFreqStrategy getIFreqStrategy();
+  void setFreqStrategy(IFreqStrategy fs);
+  IFreqStrategy getFreqStrategy();
 }
+
+

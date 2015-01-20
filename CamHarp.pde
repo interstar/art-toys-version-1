@@ -68,8 +68,8 @@ class CamHarp implements IArtToy, ICamouseUser, IMusicToy {
         ellipse(camouse.x(), camouse.y(), 10, 10);
     }
     
-    void setIFreqStrategy(IFreqStrategy fs) { this.fs = fs; }
-    IFreqStrategy getIFreqStrategy() { return fs; }
+    void setFreqStrategy(IFreqStrategy fs) { this.fs = fs; }
+    IFreqStrategy getFreqStrategy() { return fs; }
  
     void nextStep() {
       struck(camouse.x(), camouse.y());

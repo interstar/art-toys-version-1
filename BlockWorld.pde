@@ -56,8 +56,8 @@ class BasicBlock extends BaseBlock {
 
 class FlowerBlock extends BaseBlock {
   float sa=PI/5;
-  CyclingColor col = new CyclingColor(1,0,0,0);
-  
+  //IColor col = new CyclingColor((float)Math.random()*255,255.0,255.0,255.0,1.0,0.47,0.0,0.0);  
+  IColor col = new AColor(255,255,255,255);
   FlowerBlock(int x, int y) {
     makeUid();
     wide = 70;
@@ -74,13 +74,8 @@ class FlowerBlock extends BaseBlock {
     strokeWeight(2);
     fill(200,200,200,100);
     
-    stroke(col);
-    col.next();
+    stroke(col.next());
     
-    //stroke(rc,255,255,255);
-    rc=rc+drc;
-    if (rc>255) {drc=-1;}
-    if (rc<0) {drc=1;}
     translate(getX()+wide/2,getY()+high/2);
     
     for (int i=0;i<8;i++) {

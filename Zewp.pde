@@ -1,17 +1,18 @@
-interface Mover extends Actor {
+interface IMover extends Actor {
   void sendOSCMessage();
-  void interact(ArrayList<Block> blocks, ArrayList<Mover> movers);
-
+  void interact(ArrayList<Block> blocks, ArrayList<IMover> movers);
 }
 
-class Zewp extends BaseActor implements Mover {
+class Zewp extends BaseActor implements IMover, IMusicToy {
     float a, da, dx, dy, len, vel, cos_a, sin_a;
     int colour;
     boolean alive;
 
     int app_width, app_height;
-    ZewpOSCObservingInstrument inst;
+    OSCObservingInstrument inst;
 
+    IFreqStrategy freqStrat;
+    
     int newNote;
     
     Zewp(int id, float x, float y, float a, float len, float vel, int colour, int app_width, int app_height) {
@@ -30,7 +31,9 @@ class Zewp extends BaseActor implements Mover {
       this.app_height = app_height;
       alive=true;
       newNote=0;
-      inst = new ZewpOSCObservingInstrument("127.0.0.1", 9004, "/channel"+this.id);
+      inst = new OSCObservingInstrument("127.0.0.1", 9004, "/channel"+this.id);
+      
+      freqStrat = new IdentityFreqStrategy();
       
       if (rnd.nextInt(100) < 50) {
           da = PI / 12;
@@ -50,7 +53,7 @@ class Zewp extends BaseActor implements Mover {
     int getX() { return (int)x; }
     int getY() { return (int)y; }
 
-    boolean look_ahead(ArrayList<Mover> zewps, ArrayList<Block> glyphs) {
+    boolean look_ahead(ArrayList<IMover> zewps, ArrayList<Block> glyphs) {
       /* return true if something ahead, otherwise, false */  
       float px,py; // point we're testing
    
@@ -84,7 +87,7 @@ class Zewp extends BaseActor implements Mover {
         return false;
     }
 
-    boolean zewp_in_front(int px, int py, ArrayList<Mover> zewps) {
+    boolean zewp_in_front(int px, int py, ArrayList<IMover> zewps) {
         for (int z=0;z<zewps.size();z++) {
             if (z == id) { continue; /* don't test for self */ }
             if (zewps.get(z).hit((int)px,(int)py)) {
@@ -123,7 +126,7 @@ class Zewp extends BaseActor implements Mover {
     }
 
 
-  void interact(ArrayList<Block> blocks, ArrayList<Mover> movers) {
+  void interact(ArrayList<Block> blocks, ArrayList<IMover> movers) {
       if (!alive) { return; }
   
       boolean ahead = look_ahead(movers,blocks);
@@ -160,6 +163,9 @@ class Zewp extends BaseActor implements Mover {
       newNote=0;
   }
   
+  void setFreqStrategy(IFreqStrategy fs) { freqStrat = fs; }
+  IFreqStrategy getFreqStrategy() { return freqStrat; }
+  
 }
 
 class Zewp2 extends Zewp {
@@ -190,7 +196,7 @@ class Zewp2 extends Zewp {
   }
 
 
-  boolean zewp_in_front(int px, int py, ArrayList<Mover> zewps) {
+  boolean zewp_in_front(int px, int py, ArrayList<IMover> zewps) {
       for (int z=0;z<zewps.size();z++) {
           if (z == id) { continue; /* don't test for self */ }
           if (zewps.get(z).hit((int)px,(int)py)) {
@@ -237,7 +243,7 @@ class ZewpFactory implements IBlockWorldFactory {
 class ZewpWorld extends BaseControlAutomaton implements IControlAutomaton, IBlockWorld, IArtToy, IMusicToy {
 
   ArrayList<Block> blocks;
-  ArrayList<Mover> zewps;
+  ArrayList<IMover> zewps;
 
   Block selectedBlock;
   boolean blockSelected;
@@ -252,17 +258,17 @@ class ZewpWorld extends BaseControlAutomaton implements IControlAutomaton, IBloc
 
   ZewpWorld(String backImgName, ArrayList<Block> bs, ArrayList<Zewp> zs, IFreqStrategy fs) {
     blocks = new ArrayList<Block>();
-    zewps = new ArrayList<Mover>();
+    zewps = new ArrayList<IMover>();
     for (Block b : bs) { blocks.add(b); }
-    for (Mover z : zs) { zewps.add(z); }
+    for (IMover z : zs) { zewps.add(z); }
     backImg = loadImage(backImgName);
     wide=backImg.width;
     high=backImg.height;  
   }
 
   void sizeInSetup() { size(wide,high); }
-  void setIFreqStrategy(IFreqStrategy fs) { freqStrategy = fs; }
-  IFreqStrategy getIFreqStrategy() { return freqStrategy; }
+  void setFreqStrategy(IFreqStrategy fs) { freqStrategy = fs; }
+  IFreqStrategy getFreqStrategy() { return freqStrategy; }
   
   void struck(int x, int y) { }
   void reset() {
@@ -270,7 +276,7 @@ class ZewpWorld extends BaseControlAutomaton implements IControlAutomaton, IBloc
   };
 
   void nextStep() {
-    for (Mover z : zewps) { 
+    for (IMover z : zewps) { 
       z.interact(blocks,zewps);
     }  
   }
@@ -282,7 +288,7 @@ class ZewpWorld extends BaseControlAutomaton implements IControlAutomaton, IBloc
   void draw() {
     background(backImg);
     for (Block g : blocks) { g.draw(); }
-    for (Mover z : zewps) { 
+    for (IMover z : zewps) { 
       z.draw(); 
     }  
   }

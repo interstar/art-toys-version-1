@@ -35,21 +35,37 @@ class Cycler {
   } 
 }
 
-class CyclingColor {
+interface IColor {
+  color next();
+}
+
+class AColor implements IColor {
+  color col;
+  AColor(int r, int g, int b, int a) { col = color(r,g,b,a); }
+  color next() { return col; }
+}
+
+class CyclingColor implements IColor {
   Cycler r,g,b,a;
   
-  CyclingColor(float ir,float ig,float ib,float ia,float dr,float dg,float db,float da) {
+  void setup(float ir,float ig,float ib,float ia,float dr,float dg,float db,float da) {
     r = new Cycler(ir,dr,0,255);
     g = new Cycler(ig,dg,0,255);
     b = new Cycler(ib,db,0,255);
     a = new Cycler(ia,da,0,255);    
   }
   
-  CyclingColor(dr,dg,db,da) {
-    CyclingColor(0,0,0,0,dr,dg,db,da);
+  CyclingColor(float ir,float ig,float ib,float ia,float dr,float dg,float db,float da) {
+    setup(ir,ig,ib,ia,dr,dg,db,da);
+  }
+
+  CyclingColor(float dr,float dg,float db,float da) {
+    setup(0.0,0.0,0.0,0.0,dr,dg,db,da);
   }
   
   color next() {
     return color(r.next(),g.next(),b.next(),a.next());
   }
 }
+
+
