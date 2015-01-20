@@ -54,6 +54,47 @@ class BasicBlock extends BaseBlock {
   
 }
 
+class FlowerBlock extends BaseBlock {
+  float sa=PI/5;
+  CyclingColor col = new CyclingColor(1,0,0,0);
+  
+  FlowerBlock(int x, int y) {
+    makeUid();
+    wide = 70;
+    high = 70;
+    setX(x);
+    setY(y);
+  }
+  
+  void draw() {
+    float w2 = wide/2;
+    float hx = high*1.5;
+    pushStyle();
+    pushMatrix();
+    strokeWeight(2);
+    fill(200,200,200,100);
+    
+    stroke(col);
+    col.next();
+    
+    //stroke(rc,255,255,255);
+    rc=rc+drc;
+    if (rc>255) {drc=-1;}
+    if (rc<0) {drc=1;}
+    translate(getX()+wide/2,getY()+high/2);
+    
+    for (int i=0;i<8;i++) {
+      curve(-wide,hx, -w2,0,0,0,-wide,hx);
+      curve(-wide,-hx,-w2,0,0,0,-wide,-hx);
+      rotate(PI/4);
+    }
+    
+    popMatrix();
+    popStyle();
+  }
+  
+}
+
 class Glyph extends BaseBlock {
   public PImage img;
  

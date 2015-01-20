@@ -222,7 +222,7 @@ class ZewpFactory implements IBlockWorldFactory {
     int n;  
     String name;
     for (int i=0;i<12;i++) {
-       Block b = new BasicBlock(rnd.nextInt(im.width),rnd.nextInt(im.height-20)); 
+       Block b = new FlowerBlock(rnd.nextInt(im.width),rnd.nextInt(im.height-20)); 
        blocks.add(b);
     }
     
