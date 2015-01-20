@@ -13,8 +13,8 @@ CamHarp makeCamHarp() {
 
 void reset() {
   //toy = new KDiag(this,240,15,6);
-  toy = (new ZewpFactory("bg.png",12,10)).makeWorld();
-  //toy = makeCamHarp();
+  //toy = (new ZewpFactory("bg.png",12,10)).makeWorld();
+  toy = makeCamHarp();
   toy.reset();
   toy.sizeInSetup();  
 }

@@ -35,12 +35,13 @@ abstract class MusicActor extends BaseActor implements IMusicToy, Actor {
     IMusicToy innerMusicToy = new BaseMusicToy();
     IFreqStrategy getFreqStrategy() { return innerMusicToy.getFreqStrategy(); }
     void setFreqStrategy(IFreqStrategy fs) { innerMusicToy.setFreqStrategy(fs); }
-    float makeNote(float y) { innerMusicToy.makeNote(y); }
+    float makeNote(float y) { return innerMusicToy.makeNote(y); }
     void playNote(float freq) { innerMusicToy.playNote(freq); }
     Iterator<IObservingInstrument> itObIns() { return innerMusicToy.itObIns(); }
     ArrayList<IObservingInstrument> obIns() { return innerMusicToy.obIns(); }
     void addObservingInstrument(IObservingInstrument oi) { innerMusicToy.addObservingInstrument(oi); }
-    abstract boolean hit(int x, int y);  
+    abstract boolean hit(int x, int y);
+    abstract float getFreq();  
 }
 
 interface IFreqStrategy {
