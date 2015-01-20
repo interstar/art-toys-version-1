@@ -9,17 +9,21 @@ class Zewp extends BaseActor implements IMover, IMusicToy {
     boolean alive;
 
     int app_width, app_height;
-    OSCObservingInstrument inst;
-
-    IFreqStrategy freqStrat;
-    
     int newNote;
     
-    Zewp(int id, float x, float y, float a, float len, float vel, int colour, int app_width, int app_height) {
-      setup(id,x,y,a,len,vel,colour,app_width,app_height);
+    IMusicToy innerMusicToy = new BaseMusicToy();
+    IFreqStrategy getFreqStrategy() { return innerMusicToy.getFreqStrategy(); }
+    void setFreqStrategy(IFreqStrategy fs) { innerMusicToy.setFreqStrategy(fs); }
+    void playNote(float freq) { innerMusicToy.playNote(freq); }
+    Iterator<IObservingInstrument> itObIns() { return innerMusicToy.itObIns(); }
+    ArrayList<IObservingInstrument> obIns() { return innerMusicToy.obIns(); }
+    void addObservingInstrument(IObservingInstrument oi) { innerMusicToy.addObservingInstrument(oi); }
+    
+    Zewp(int id, float x, float y, float a, float len, float vel, int colour, int app_width, int app_height, IMusicToy aMusicToy) {
+      setup(id,x,y,a,len,vel,colour,app_width,app_height,aMusicToy);
     }
 
-    void setup(int id, float x, float y, float a, float len, float vel, int colour, int app_width, int app_height) { 
+    void setup(int id, float x, float y, float a, float len, float vel, int colour, int app_width, int app_height, IMusicToy aMusicToy) { 
       this.id = id; 
       this.x = x;
       this.y = y;      
@@ -31,9 +35,8 @@ class Zewp extends BaseActor implements IMover, IMusicToy {
       this.app_height = app_height;
       alive=true;
       newNote=0;
-      inst = new OSCObservingInstrument("127.0.0.1", 9004, "/channel"+this.id);
+      innerMusicToy = aMusicToy;
       
-      freqStrat = new IdentityFreqStrategy();
       
       if (rnd.nextInt(100) < 50) {
           da = PI / 12;
@@ -158,13 +161,13 @@ class Zewp extends BaseActor implements IMover, IMusicToy {
    
   float getFreq() { return height-(int)y; } 
   
-  void sendOSCMessage() { 
-      inst.changed(newNote,getFreq(),getX(),getFreq());
-      newNote=0;
+  void sendOSCMessage() {
+     for (IObservingInstrument oi : obIns()) {  
+        oi.changed(newNote,getFreq(),getX(),getFreq());
+     }
+     newNote=0;
   }
   
-  void setFreqStrategy(IFreqStrategy fs) { freqStrat = fs; }
-  IFreqStrategy getFreqStrategy() { return freqStrat; }
   
 }
 
@@ -172,16 +175,12 @@ class Zewp2 extends Zewp {
   float freq;
   boolean n;
 
-  Zewp2(int id, float x, float y, float a, float len, float vel, int colour, int app_width, int app_height) {
-    super(id,x,y,a,len,vel,colour,app_width,app_height);
+  Zewp2(int id, float x, float y, float a, float len, float vel, int colour, int app_width, int app_height, IMusicToy aMusicToy) {
+    super(id,x,y,a,len,vel,colour,app_width,app_height, aMusicToy);
   }
   
   float getFreq() { return freq; }
 
-  void sendOSCMessage() { 
-      inst.changed(newNote,getFreq(),getX(),getFreq());
-      newNote=0;
-  }
 
 
   boolean glyph_in_front(int x, int y, ArrayList<Block> glyphs) {
@@ -219,6 +218,8 @@ class ZewpFactory implements IBlockWorldFactory {
     noZewps = nozewps;
     backImg = imgName;
   }
+
+
   
   IBlockWorld makeWorld() {
     ArrayList<Block> blocks = new ArrayList<Block>();
@@ -233,14 +234,18 @@ class ZewpFactory implements IBlockWorldFactory {
     }
     
     for (int i=0;i<6;i++) {
-       zewps.add(new Zewp2(i, rnd.nextInt(im.width),rnd.nextInt(im.height-20), 0, 10, 2, color(255,255,200), im.width, im.height));
+      IMusicToy mt = new BaseMusicToy();
+      mt.addObservingInstrument(new OSCObservingInstrument("127.0.0.1", 9004, "/channel"+i));
+      mt.setFreqStrategy(new ScaleBasedFreqStrategy(im.height));
+      Zewp z = new Zewp2(i, rnd.nextInt(im.width),rnd.nextInt(im.height-20), 0, 10, 2, color(255,255,200), im.width, im.height,mt);
+      zewps.add(z);
     }
     
-    return new ZewpWorld(backImg,blocks,zewps,new ScaleBasedFreqStrategy(im.height));
+    return new ZewpWorld(backImg,blocks,zewps);
   }
 }
 
-class ZewpWorld extends BaseControlAutomaton implements IControlAutomaton, IBlockWorld, IArtToy {
+class ZewpWorld extends BaseControlAutomaton implements IControlAutomaton, IBlockWorld {
 
   ArrayList<Block> blocks;
   ArrayList<IMover> zewps;
@@ -253,10 +258,9 @@ class ZewpWorld extends BaseControlAutomaton implements IControlAutomaton, IBloc
   int wide=100;
   int high=100;
   
-  ArrayList<ObservingInstrument> instruments = new ArrayList<ObservingInstrument>();
-  IFreqStrategy freqStrategy;
+  IMusicToy innerMusicToy = new BaseMusicToy();
 
-  ZewpWorld(String backImgName, ArrayList<Block> bs, ArrayList<Zewp> zs, IFreqStrategy fs) {
+  ZewpWorld(String backImgName, ArrayList<Block> bs, ArrayList<Zewp> zs) {
     blocks = new ArrayList<Block>();
     zewps = new ArrayList<IMover>();
     for (Block b : bs) { blocks.add(b); }
@@ -267,8 +271,6 @@ class ZewpWorld extends BaseControlAutomaton implements IControlAutomaton, IBloc
   }
 
   void sizeInSetup() { size(wide,high); }
-  void setFreqStrategy(IFreqStrategy fs) { freqStrategy = fs; }
-  IFreqStrategy getFreqStrategy() { return freqStrategy; }
   
   void struck(int x, int y) { }
   void reset() {
@@ -281,9 +283,6 @@ class ZewpWorld extends BaseControlAutomaton implements IControlAutomaton, IBloc
     }  
   }
 
-  void addObservingInstrument(ObservingInstrument oi) {
-    instruments.add(oi);
-  }
   
   void draw() {
     background(backImg);

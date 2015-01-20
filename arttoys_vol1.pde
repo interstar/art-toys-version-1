@@ -1,6 +1,6 @@
 import java.util.Random;
 
-IArtToy toy;
+IArtAndMusic toy;
 
 Random rnd = new Random();;
 
@@ -10,8 +10,8 @@ void reset() {
   toy = new CamHarp(this);
   toy.reset();
   toy.sizeInSetup();  
-  //toy.addObservingInstrument(new MinimObservingInstrument());
-  toy.addObservingInstrument(new OSCObservingInstrument("127.0.0.1",9004,"/channel0"));  
+  toy.addObservingInstrument(new MinimObservingInstrument());
+  //toy.addObservingInstrument(new OSCObservingInstrument("127.0.0.1",9004,"/channel0"));  
 }
   
 

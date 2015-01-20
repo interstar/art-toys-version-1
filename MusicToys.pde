@@ -1,8 +1,29 @@
+import java.util.*;
 
 interface IMusicToy {
   void setFreqStrategy(IFreqStrategy fs);
   IFreqStrategy getFreqStrategy();
-  void addObservingInstrument(ObservingInstrument oi);
+  void addObservingInstrument(IObservingInstrument oi);
+  ArrayList<IObservingInstrument> obIns();
+  Iterator<IObservingInstrument> itObIns();
+  void playNote(float freq);  
+}
+
+class BaseMusicToy implements IMusicToy {
+  ArrayList<IObservingInstrument> oins = new ArrayList<IObservingInstrument>();
+  IFreqStrategy freqStrat = new IdentityFreqStrategy();
+  
+  void setFreqStrategy(IFreqStrategy fs) {freqStrat = fs;}
+  IFreqStrategy getFreqStrategy() { return freqStrat; }
+  void addObservingInstrument(IObservingInstrument oi) { oins.add(oi); }
+  ArrayList<IObservingInstrument> obIns() { return oins; }
+  Iterator<IObservingInstrument> itObIns() { return oins.iterator(); }
+  
+  void playNote(float freq) {
+    for (IObservingInstrument oi : oins) {
+      oi.playNote(freq);
+    }
+  }
 
 }
 
@@ -17,8 +38,25 @@ class IdentityFreqStrategy implements IFreqStrategy {
   float rawFreq(float y) { return y; }
 }
 
-import java.util.Map;
-import java.util.HashMap;
+  class UncertainY implements IFreqStrategy {
+    float noise;
+    float high;
+    
+    UncertainY(float h, float n) {
+      high = h; 
+      noise = n;  
+    }
+    
+   float rawFreq(float y) {
+      return map(y, -high/2, high/2, 1000,0 ); 
+   }
+    
+   float corrected(float f) {
+      return (float)(f - (noise/2) + (Math.random()*noise));
+    }
+  }
+
+
 
 class Scale {
     int[] scale;

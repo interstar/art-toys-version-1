@@ -177,29 +177,9 @@ interface HasNetwork {
   int selected(int x, int y, int xOffset, int yOffset);
 }
 
-class KDiag extends BaseControlAutomaton implements IControlAutomaton, IMusicToy, ICamouseUser {
-    
-  class UncertainY implements IFreqStrategy {
-    float noise;
-    float high;
-    
-    UncertainY(float h, float n) {
-      high = h; 
-      noise = n;  
-    }
-    
-   float rawFreq(float y) {
-      return map(y, -high/2, high/2, 1000,0 ); 
-   }
-    
-   float corrected(float f) {
-      return (float)(f - (noise/2) + (Math.random()*noise));
-    }
-  }
-
+class KDiag extends BaseControlAutomaton implements IControlAutomaton, IMusicToy, ICamouseUser {    
   Network network;
-  IFreqStrategy fs = new IdentityFreqStrategy();
-  ArrayList<ObservingInstrument> obis = new ArrayList<ObservingInstrument>();
+  IMusicToy innerMusicToy = new BaseMusicToy();
 
   int currentNode; 
   int wait = 20;
@@ -227,28 +207,23 @@ class KDiag extends BaseControlAutomaton implements IControlAutomaton, IMusicToy
     currentNode = 0;     
   }
  
-  void addObservingInstrument(ObservingInstrument oi) {
-    obis.add(oi); 
-  }
+  void addObservingInstrument(IObservingInstrument oi) { innerMusicToy.addObservingInstrument(oi); }
+  void playNote(float freq) { innerMusicToy.playNote(freq); }
+  Iterator<IObservingInstrument> itObIns() { return innerMusicToy.itObIns(); }
+  ArrayList<IObservingInstrument> obIns() { return innerMusicToy.obIns(); }
+  void setFreqStrategy(IFreqStrategy fs) { innerMusicToy.setFreqStrategy(fs); }
+  IFreqStrategy getFreqStrategy() { return innerMusicToy.getFreqStrategy(); }
 
-  void playNote(float freq) {
-    for (ObservingInstrument oi : obis) {
-      oi.playNote(freq);
-    }
-  }
   
   void nextStep() {
-
     camouseStep();
-    
     if (!isPlaying()) { return; }
-  
     if (frameCount % (1+wait) == 0) { 
       try {
         currentNode = network.nextFrom(currentNode);
         wait = network.currentWait*5;
         Node node = network.getNode(currentNode);
-        playNote(fs.corrected(fs.rawFreq(node.y)));      
+        playNote(innerMusicToy.getFreqStrategy().corrected(innerMusicToy.getFreqStrategy().rawFreq(node.y)));      
       } catch (EndOfSequenceException e) {
         println("End of sequence from " + currentNode);
         currentNode = 0;
@@ -275,7 +250,7 @@ class KDiag extends BaseControlAutomaton implements IControlAutomaton, IMusicToy
     if (find > -1) { 
       start();
       Node node = network.nodes.get(currentNode);
-      playNote(fs.corrected(fs.rawFreq(node.y)));  
+      playNote(innerMusicToy.getFreqStrategy().corrected(innerMusicToy.getFreqStrategy().rawFreq(node.y)));  
     }  
   }
 
@@ -304,8 +279,6 @@ class KDiag extends BaseControlAutomaton implements IControlAutomaton, IMusicToy
     setFreqStrategy(new UncertainY(height,100));    
   }
 
-  void setFreqStrategy(IFreqStrategy fs) { this.fs = fs; }
-  IFreqStrategy getFreqStrategy() { return fs; }
 
   void camouseStep() {
       struck(camouse.x(),camouse.y());

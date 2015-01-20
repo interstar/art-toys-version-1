@@ -11,16 +11,16 @@ OscP5 oscP5 = new OscP5(this,9001); // one, instantiated once
 
 
 
-interface ObservingController {  
+interface IObservingController {  
   void changed(String... params);
   void changed(float... params);
 }
 
-interface ObservingInstrument {
+interface IObservingInstrument extends IObservingController {
   void playNote(float freq);
 } 
 
-interface ObservingOSCController extends ObservingController {
+interface IObservingOSCInstrument extends IObservingInstrument {
   void setIP(String ip, int port);
   void setPath(String path);
   OscP5 getOscP5();
@@ -48,7 +48,7 @@ class SineInstrument implements Instrument {
   }
 }
 
-class MinimObservingInstrument implements ObservingInstrument {
+class MinimObservingInstrument implements IObservingInstrument {
   
   MinimObservingInstrument() {
     minim = new Minim(this);
@@ -88,7 +88,7 @@ class OscMessageFactory {
 } 
 
 
-abstract class BaseOSCInstrument implements ObservingOSCController {
+abstract class BaseOSCInstrument implements IObservingOSCInstrument {
   NetAddress myRemoteLocation;
   String path;
 
@@ -104,7 +104,7 @@ abstract class BaseOSCInstrument implements ObservingOSCController {
 }
 
 
-class OSCObservingInstrument extends BaseOSCInstrument implements ObservingInstrument, ObservingOSCController {
+class OSCObservingInstrument extends BaseOSCInstrument implements IObservingInstrument, IObservingOSCInstrument {
   
   OSCObservingInstrument(String ip, int port, String path) {
     setIP(ip,port);

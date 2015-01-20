@@ -22,19 +22,17 @@ class Chime extends BaseActor {
   }
 }
 
-class CamHarp implements IArtToy, ICamouseUser, IMusicToy {
+class CamHarp extends BaseMusicToy implements IArtAndMusic, IArtToy, ICamouseUser, IMusicToy {
     Camouse camouse;
     PApplet pa;
-    IFreqStrategy fs;
     
     ArrayList<Chime> chimes = new ArrayList<Chime>();
-    ArrayList<ObservingInstrument> obins = new ArrayList<ObservingInstrument>();
     
     CamHarp(PApplet pa) {
       this.pa = pa;
       sizeInSetup();
       camouse = new Camouse(pa);
-      fs = new ScaleBasedFreqStrategy(480);
+      setFreqStrategy(new ScaleBasedFreqStrategy(480));
       reset();      
     }
     
@@ -67,10 +65,7 @@ class CamHarp implements IArtToy, ICamouseUser, IMusicToy {
         fill(100,100,255,200);    
         ellipse(camouse.x(), camouse.y(), 10, 10);
     }
-    
-    void setFreqStrategy(IFreqStrategy fs) { this.fs = fs; }
-    IFreqStrategy getFreqStrategy() { return fs; }
- 
+     
     void nextStep() {
       struck(camouse.x(), camouse.y());
     } 
@@ -78,8 +73,8 @@ class CamHarp implements IArtToy, ICamouseUser, IMusicToy {
     void struck(int x, int y) {
       for (Chime c : chimes) {
         if (c.hit(x,y)) {
-          for (ObservingInstrument oi : obins) {
-            oi.playNote(fs.corrected(fs.rawFreq(c.y)));
+          for (IObservingInstrument oi : obIns()) {
+            oi.playNote(freqStrat.corrected(freqStrat.rawFreq(c.y)));
           }
         }
       }
@@ -93,7 +88,6 @@ class CamHarp implements IArtToy, ICamouseUser, IMusicToy {
       }
     }
     
-    void addObservingInstrument(ObservingInstrument oi) { obins.add(oi); }
 
     void mousePressed() {}
     void mouseDragged() {}
