@@ -240,7 +240,7 @@ class ZewpFactory implements IBlockWorldFactory {
   }
 }
 
-class ZewpWorld extends BaseControlAutomaton implements IControlAutomaton, IBlockWorld, IArtToy, IMusicToy {
+class ZewpWorld extends BaseControlAutomaton implements IControlAutomaton, IBlockWorld, IArtToy {
 
   ArrayList<Block> blocks;
   ArrayList<IMover> zewps;

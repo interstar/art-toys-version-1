@@ -1,7 +1,6 @@
 interface IArtToy {
   void reset();
   void sizeInSetup();
-  void addObservingInstrument(ObservingInstrument oi);
   
   void nextStep();
   void draw();
@@ -13,10 +12,4 @@ interface IArtToy {
   void mouseDragged();
   void mouseReleased();
 }
-
-interface IMusicToy {
-  void setFreqStrategy(IFreqStrategy fs);
-  IFreqStrategy getFreqStrategy();
-}
-
 

@@ -1,3 +1,22 @@
+
+interface IMusicToy {
+  void setFreqStrategy(IFreqStrategy fs);
+  IFreqStrategy getFreqStrategy();
+  void addObservingInstrument(ObservingInstrument oi);
+
+}
+
+interface IFreqStrategy {
+  float rawFreq(float y); // turns the y parameter into a frequency
+  float corrected(float freq); // turns a raw frequency into a  
+}
+
+
+class IdentityFreqStrategy implements IFreqStrategy {
+  float corrected(float f) { return f; }
+  float rawFreq(float y) { return y; }
+}
+
 import java.util.Map;
 import java.util.HashMap;
 

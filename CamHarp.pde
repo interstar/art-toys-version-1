@@ -48,7 +48,7 @@ class CamHarp implements IArtToy, ICamouseUser, IMusicToy {
         }
       }
     }
-    
+        
     void draw() {
       drawVideo();
       for (Chime c : chimes) {  c.draw();  }
