@@ -1,18 +1,12 @@
-interface IBlockWorld extends IControlAutomaton {
-  
-}
+interface IBlockWorld extends IAutomatonToy { }
 
 interface IBlockWorldFactory {
   IBlockWorld makeWorld();
 }
 
 
-interface Block extends Actor {
-  void setX(int x);
-  void setY(int y);
-}  
 
-abstract class BaseBlock extends BaseActor implements Block {
+abstract class BaseBlock extends BaseActor {
   
   boolean hit(int px, int py) {
     if (px < x) {return false;}

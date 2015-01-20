@@ -177,7 +177,7 @@ interface HasNetwork {
   int selected(int x, int y, int xOffset, int yOffset);
 }
 
-class KDiag extends BaseControlAutomaton implements IControlAutomaton, IMusicToy, ICamouseUser {    
+class KDiag extends BaseControlAutomaton implements IAutomatonToy, IMusicToy, ICamouseUser {    
   Network network;
   IMusicToy innerMusicToy = new BaseMusicToy();
 

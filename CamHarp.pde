@@ -22,7 +22,7 @@ class Chime extends BaseActor {
   }
 }
 
-class CamHarp extends BaseMusicToy implements IArtAndMusic, IArtToy, ICamouseUser, IMusicToy {
+class CamHarp extends BaseMusicToy implements IAutomatonToy, ICamouseUser, IMusicToy {
     Camouse camouse;
     PApplet pa;
     
@@ -92,6 +92,8 @@ class CamHarp extends BaseMusicToy implements IArtAndMusic, IArtToy, ICamouseUse
     void mousePressed() {}
     void mouseDragged() {}
     void mouseReleased() {}
- 
-   
+
+    boolean isPlaying() { return true; } 
+    void start() { }
+    void stop() {  }   
 }

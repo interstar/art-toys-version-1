@@ -1,6 +1,6 @@
 interface IMover extends Actor {
   void sendOSCMessage();
-  void interact(ArrayList<Block> blocks, ArrayList<IMover> movers);
+  void interact(ArrayList<Actor> blocks, ArrayList<IMover> movers);
 }
 
 class Zewp extends BaseActor implements IMover, IMusicToy {
@@ -56,7 +56,7 @@ class Zewp extends BaseActor implements IMover, IMusicToy {
     int getX() { return (int)x; }
     int getY() { return (int)y; }
 
-    boolean look_ahead(ArrayList<IMover> zewps, ArrayList<Block> glyphs) {
+    boolean look_ahead(ArrayList<IMover> zewps, ArrayList<Actor> glyphs) {
       /* return true if something ahead, otherwise, false */  
       float px,py; // point we're testing
    
@@ -101,7 +101,7 @@ class Zewp extends BaseActor implements IMover, IMusicToy {
     }
 
 
-    boolean glyph_in_front(int x, int y, ArrayList<Block> glyphs) {
+    boolean glyph_in_front(int x, int y, ArrayList<Actor> glyphs) {
         for (int i=0; i<glyphs.size(); i++) {
             if (glyphs.get(i).hit((int)x,(int)y)) {
                 return true;
@@ -129,7 +129,7 @@ class Zewp extends BaseActor implements IMover, IMusicToy {
     }
 
 
-  void interact(ArrayList<Block> blocks, ArrayList<IMover> movers) {
+  void interact(ArrayList<Actor> blocks, ArrayList<IMover> movers) {
       if (!alive) { return; }
   
       boolean ahead = look_ahead(movers,blocks);
@@ -183,7 +183,7 @@ class Zewp2 extends Zewp {
 
 
 
-  boolean glyph_in_front(int x, int y, ArrayList<Block> glyphs) {
+  boolean glyph_in_front(int x, int y, ArrayList<Actor> glyphs) {
         for (int i=0; i<glyphs.size(); i++) {
             if (glyphs.get(i).hit((int)x,(int)y)) {
                 freq = glyphs.get(i).getFreq();
@@ -222,14 +222,14 @@ class ZewpFactory implements IBlockWorldFactory {
 
   
   IBlockWorld makeWorld() {
-    ArrayList<Block> blocks = new ArrayList<Block>();
+    ArrayList<Actor> blocks = new ArrayList<Actor>();
     ArrayList<Zewp> zewps = new ArrayList<Zewp>();
 
     PImage im = loadImage(backImg);
     int n;  
     String name;
     for (int i=0;i<12;i++) {
-       Block b = new FlowerBlock(rnd.nextInt(im.width),rnd.nextInt(im.height-20)); 
+       Actor b = new FlowerBlock(rnd.nextInt(im.width),rnd.nextInt(im.height-20)); 
        blocks.add(b);
     }
     
@@ -247,10 +247,10 @@ class ZewpFactory implements IBlockWorldFactory {
 
 class ZewpWorld extends BaseControlAutomaton implements IControlAutomaton, IBlockWorld {
 
-  ArrayList<Block> blocks;
+  ArrayList<Actor> blocks;
   ArrayList<IMover> zewps;
 
-  Block selectedBlock;
+  Actor selectedBlock;
   boolean blockSelected;
   Random rnd;  
   
@@ -261,9 +261,9 @@ class ZewpWorld extends BaseControlAutomaton implements IControlAutomaton, IBloc
   IMusicToy innerMusicToy = new BaseMusicToy();
 
   ZewpWorld(String backImgName, ArrayList<Block> bs, ArrayList<Zewp> zs) {
-    blocks = new ArrayList<Block>();
+    blocks = new ArrayList<Actor>();
     zewps = new ArrayList<IMover>();
-    for (Block b : bs) { blocks.add(b); }
+    for (Actor b : bs) { blocks.add(b); }
     for (IMover z : zs) { zewps.add(z); }
     backImg = loadImage(backImgName);
     wide=backImg.width;
@@ -286,7 +286,7 @@ class ZewpWorld extends BaseControlAutomaton implements IControlAutomaton, IBloc
   
   void draw() {
     background(backImg);
-    for (Block g : blocks) { g.draw(); }
+    for (Actor g : blocks) { g.draw(); }
     for (IMover z : zewps) { 
       z.draw(); 
     }  
@@ -316,7 +316,7 @@ class ZewpWorld extends BaseControlAutomaton implements IControlAutomaton, IBloc
   }
 
   void mousePressed() {
-    for (Block g : blocks) {
+    for (Actor g : blocks) {
       if (g.hit(mouseX,mouseY)) {
         println("Hit " + g);
         blockSelected=true;

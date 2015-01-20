@@ -1,17 +1,21 @@
 import java.util.Random;
 
-IArtAndMusic toy;
+IAutomatonToy toy;
 
 Random rnd = new Random();;
+
+CamHarp makeCamHarp() {
+  CamHarp h = new CamHarp(this);
+  h.addObservingInstrument(new MinimObservingInstrument());  
+  return h;
+}
 
 void reset() {
   //toy = new KDiag(this,240,15,6);
   //toy = (new ZewpFactory("bg.png",12,10)).makeWorld();
-  toy = new CamHarp(this);
+  toy = makeCamHarp();
   toy.reset();
   toy.sizeInSetup();  
-  toy.addObservingInstrument(new MinimObservingInstrument());
-  //toy.addObservingInstrument(new OSCObservingInstrument("127.0.0.1",9004,"/channel0"));  
 }
   
 

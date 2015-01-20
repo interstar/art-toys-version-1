@@ -3,6 +3,8 @@ Uids _ids = new Uids();
 interface Actor {  
   int getX();
   int getY();
+  void setX(int x);
+  void setY(int y);  
   int getId();
   float fGetX();
   float fGetY();
@@ -25,6 +27,9 @@ abstract class BaseActor implements Actor {
 
   int getX() { return (int)x; }
   int getY() { return (int)y; }
+  void setX(int x) {this.x = x; }
+  void setY(int y) {this.y = y; }  
+  
   int getId() { return id; }
   float fGetX() { return x; }
   float fGetY() { return y; }
