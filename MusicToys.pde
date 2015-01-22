@@ -46,32 +46,42 @@ abstract class MusicActor extends BaseActor implements IMusicToy, Actor {
 
 interface IFreqStrategy {
   float rawFreq(float y); // turns the y parameter into a frequency
-  float corrected(float freq); // turns a raw frequency into a  
+  float corrected(float freq); // turns a raw frequency into one corrected by the strategy
+  void controlChange(String key, int val); // because some strategies can be updated by an external control
+  void controlChange(String key, String val); // or text argument  
 }
 
 
 class IdentityFreqStrategy implements IFreqStrategy {
   float corrected(float f) { return f; }
   float rawFreq(float y) { return y; }
+  void controlChange(String key, int val) {}
+  void controlChange(String key, String val) {}
 }
 
-  class UncertainY implements IFreqStrategy {
-    float noise;
-    float high;
-    
-    UncertainY(float h, float n) {
-      high = h; 
-      noise = n;  
-    }
-    
-   float rawFreq(float y) {
-      return map(y, -high/2, high/2, 1000,0 ); 
-   }
-    
-   float corrected(float f) {
-      return (float)(f - (noise/2) + (Math.random()*noise));
-    }
+class UncertainY implements IFreqStrategy {
+  float noise;
+  float high;
+  
+  UncertainY(float h, float n) {
+    high = h; 
+    noise = n;  
   }
+  
+  float rawFreq(float y) {
+    return map(y, -high/2, high/2, 1000,0 ); 
+  }
+  
+  float corrected(float f) {
+    return (float)(f - (noise/2) + (Math.random()*noise));
+  } 
+  
+  void controlChange(String key, int val) {
+   // TODO ... implement a change in noise according to control 
+  } 
+  void controlChange(String key, String val) {}
+  
+}
 
 
 
@@ -100,9 +110,25 @@ double midiToFreq(double midi_note) {
 class NoteCalculator {
   Map<String,Scale> scales;
   Scale current;
+  int midiMin, midiMax;
+  String[] noteNames;
   
-  NoteCalculator() {
+  NoteCalculator() { 
+    setupScales();
+    midiMin = 30;
+    midiMax = 127; 
+  }
+  
+  NoteCalculator(int min, int max) { 
+    setupScales();
+    midiMin = min;
+    midiMax = max; 
+  }
+  
+
+  void setupScales() {
     scales = new HashMap<String,Scale>();
+    noteNames = new String[]{"A","A#","B","C","C#","D","D#","E","F","F#","G","G#"};
     
     scales.put("chromatic",  new Scale(new int[]{1,1,1,1,1,1,1,1,1,1,1,1,1}));
     scales.put("major",      new Scale(new int[]{1,0,1,0,1,1,0,1,0,1,0,1,1}));
@@ -117,14 +143,20 @@ class NoteCalculator {
     current = scales.get("major");
      
   }
+ 
+  String noteName(int midiNote) {
+    return noteNames[(midiNote-21)%12] + (int)((midiNote-21) / 12) ;
+  }
   
   void setCurrent(String k) {
     current = scales.get(k);
   }
 
   double valToMidi(int val, float max) {
-    double note = map(val,0,max,30,128);
-    return current.transform((int)note);
+    double note = map(val,0,max,midiMin,midiMax);
+    int m = current.transform((int)note);
+    println("note " + noteName(m));
+    return m;
   }
 
   double valToFreq(int v, float max) {
@@ -133,17 +165,28 @@ class NoteCalculator {
 
 }
 
-NoteCalculator noteCalculator = new NoteCalculator();
 
 class ScaleBasedFreqStrategy implements IFreqStrategy {
   NoteCalculator nc;
   float range;
-  ScaleBasedFreqStrategy(float r) {
+  ScaleBasedFreqStrategy(NoteCalculator nc, float r) {
     range = r; 
-    nc = new NoteCalculator(); 
+    this.nc = nc; 
   }
   
-  float rawFreq(float y) { return (float)nc.valToFreq((int)y,range); }
+  float rawFreq(float y) { 
+    return (float)nc.valToFreq((int)y,range);
+  }
+  
   float corrected(float f) { return f; }
-  void setScale(String s) { nc.setCurrent(s); } 
+  void setScale(String s) { nc.setCurrent(s); }
+ 
+  void controlChange(String key, int val) {}
+  void controlChange(String key, String val) {
+    if (key == "scale") { 
+      setScale(val);
+      println("NoteCalculator changed to " + val); 
+    }
+  }
+  
 }

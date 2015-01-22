@@ -207,31 +207,33 @@ class ZewpFactory implements IBlockWorldFactory {
     noZewps = nozewps;
     backImg = imgName;
   }
-
-
   
   IBlockWorld makeWorld() {
     ArrayList<Actor> blocks = new ArrayList<Actor>();
     ArrayList<Zewp> zewps = new ArrayList<Zewp>();
 
     PImage im = loadImage(backImg);
+    
     int n;  
     String name;
+    NoteCalculator nc = new NoteCalculator();
+    IFreqStrategy fs = new ScaleBasedFreqStrategy(nc,im.height);
+    
     for (int i=0;i<12;i++) {
        MusicActor b = new FlowerBlock(rnd.nextInt(im.width),rnd.nextInt(im.height-20));
-       b.setFreqStrategy(new ScaleBasedFreqStrategy(im.height)); 
+       b.setFreqStrategy(fs); 
        blocks.add(b);
     }
     
     for (int i=0;i<6;i++) {
       IMusicToy mt = new BaseMusicToy();
       mt.addObservingInstrument(new OSCObservingInstrument("127.0.0.1", 9004, "/channel"+i));
-      mt.setFreqStrategy(new ScaleBasedFreqStrategy(im.height));
+      mt.setFreqStrategy(fs);
       Zewp z = new Zewp2(i, rnd.nextInt(im.width),rnd.nextInt(im.height-20), 0, 10, 2, color(255,255,200), im.width, im.height,mt);
       zewps.add(z);
     }
     
-    return new ZewpWorld(backImg,blocks,zewps);
+    return new ZewpWorld(backImg,blocks,zewps,fs);
   }
 }
 
@@ -248,16 +250,21 @@ class ZewpWorld extends BaseControlAutomaton implements IAutomatonToy, IBlockWor
   int wide=100;
   int high=100;
   
-  IMusicToy innerMusicToy = new BaseMusicToy();
+  IMusicToy innerMusicToy = new BaseMusicToy();  
 
-  ZewpWorld(String backImgName, ArrayList<Actor> bs, ArrayList<Zewp> zs) {
+  ZewpWorld(String backImgName, ArrayList<Actor> bs, ArrayList<Zewp> zs, IFreqStrategy fs) {
+    backImg = loadImage(backImgName);
+
+    wide=backImg.width;
+    high=backImg.height;  
+
     blocks = new ArrayList<Actor>();
     zewps = new ArrayList<IMover>();
     for (Actor b : bs) { blocks.add(b); }
     for (IMover z : zs) { zewps.add(z); }
-    backImg = loadImage(backImgName);
-    wide=backImg.width;
-    high=backImg.height;  
+    
+    innerMusicToy.setFreqStrategy(fs);
+    
   }
 
   void sizeInSetup() { size(wide,high); }
@@ -282,26 +289,30 @@ class ZewpWorld extends BaseControlAutomaton implements IAutomatonToy, IBlockWor
     }  
   }
 
+  void setScale(String scale) {
+    innerMusicToy.getFreqStrategy().controlChange("scale",scale);
+  }
+
   void keyPressed(int k) {
   switch (key) {
     case '0' : 
-      noteCalculator.setCurrent("chromatic"); break;
+      setScale("chromatic"); break;
     case '1' : 
-      noteCalculator.setCurrent("major"); break;
+      setScale("major"); break;
     case '2' : 
-      noteCalculator.setCurrent("minor"); break;
+      setScale("minor"); break;
     case '3' : 
-      noteCalculator.setCurrent("diminished"); break;
+      setScale("diminished"); break;
     case '4' : 
-      noteCalculator.setCurrent("arab"); break;
+      setScale("arab"); break;
     case '5' : 
-      noteCalculator.setCurrent("debussy"); break;
+      setScale("debussy"); break;
     case '6' : 
-      noteCalculator.setCurrent("gypsy"); break;
+      setScale("gypsy"); break;
     case '7' : 
-      noteCalculator.setCurrent("pent1"); break;
+      setScale("pent1"); break;
     case '8' : 
-      noteCalculator.setCurrent("pent2"); break;
+      setScale("pent2"); break;
     }    
   }
 

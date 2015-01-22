@@ -2,14 +2,14 @@ import java.util.*;
 
 class Chime extends MusicActor implements Actor, IMusicToy {
   int rad,wide,high;
-  Chime(int r, int x, int y, int w, int h) {
+  Chime(int r, int x, int y, int w, int h, IFreqStrategy fs) {
     makeUid();
     rad  = r;
     high = h;
     wide = w;
     this.x = x;
     this.y = y;
-    setFreqStrategy(new ScaleBasedFreqStrategy(wide));
+    setFreqStrategy(fs);
   }
   
   boolean hit(int ox, int oy) {
@@ -32,13 +32,14 @@ class CamHarp extends BaseMusicToy implements IAutomatonToy, ICamouseUser, IMusi
     PApplet pa;
     
     ArrayList<Chime> chimes = new ArrayList<Chime>();
-    
+    NoteCalculator nc = new NoteCalculator(32,46);
+    ScaleBasedFreqStrategy sbfs = new ScaleBasedFreqStrategy(nc,480);
     
     CamHarp(PApplet pa) {
       this.pa = pa;
       sizeInSetup();
       camouse = new Camouse(pa);
-      setFreqStrategy(new ScaleBasedFreqStrategy(480));
+      setFreqStrategy(sbfs);
       reset();      
     }
     
@@ -48,7 +49,7 @@ class CamHarp extends BaseMusicToy implements IAutomatonToy, ICamouseUser, IMusi
       chimes = new ArrayList<Chime>();
       for (int r = 0; r<4;r++) {
         for (int c = 0; c<12;c++) {
-          chimes.add(new Chime(15,(c+1)*50,50+r*110,640, 480));
+          chimes.add(new Chime(15,(c+1)*50,50+r*110,640, 480, sbfs));
         }
       }
     }
