@@ -14,9 +14,7 @@ interface IArtToy extends UIListener {
   
   void nextStep();
   void draw();
-  
-  void addUIListener(UIListener uil);
-  Iterable<UIListener> UIListeners();  
+
 }
 
 
