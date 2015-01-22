@@ -172,7 +172,6 @@ class Zewp2 extends Zewp {
   float getFreq() { return freq; }
 
 
-
   boolean glyph_in_front(int x, int y, ArrayList<Actor> glyphs) {
         for (int i=0; i<glyphs.size(); i++) {
             if (glyphs.get(i).hit((int)x,(int)y)) {
@@ -219,7 +218,8 @@ class ZewpFactory implements IBlockWorldFactory {
     int n;  
     String name;
     for (int i=0;i<12;i++) {
-       Actor b = new FlowerBlock(rnd.nextInt(im.width),rnd.nextInt(im.height-20)); 
+       MusicActor b = new FlowerBlock(rnd.nextInt(im.width),rnd.nextInt(im.height-20));
+       b.setFreqStrategy(new ScaleBasedFreqStrategy(im.height)); 
        blocks.add(b);
     }
     
@@ -326,6 +326,11 @@ class ZewpWorld extends BaseControlAutomaton implements IAutomatonToy, IBlockWor
   void mouseReleased() {
     blockSelected = false;
   }
+
+  ArrayList<UIListener> uils = new ArrayList<UIListener>(); 
+  void addUIListener(UIListener uil) { uils.add(uil); }
+  Iterable<UIListener> UIListeners() { return new IteratorCollection<UIListener>(uils.iterator()); }
+
   
 }
 

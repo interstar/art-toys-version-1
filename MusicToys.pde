@@ -4,6 +4,7 @@ interface IMusicToy {
   void setFreqStrategy(IFreqStrategy fs);
   IFreqStrategy getFreqStrategy();
   void addObservingInstrument(IObservingInstrument oi);
+  
   ArrayList<IObservingInstrument> obIns();
   Iterator<IObservingInstrument> itObIns();
   void playNote(float freq);
@@ -23,8 +24,7 @@ class BaseMusicToy implements IMusicToy {
   float makeNote(float y) { return freqStrat.corrected(freqStrat.rawFreq(y)); }
   
   void playNote(float freq) {
-    for (IObservingInstrument oi : oins) {
-      println(oi + " playing " + freq);
+    for (IObservingInstrument oi : oins) {     
       oi.playNote(freq);
     }
   }
@@ -122,25 +122,28 @@ class NoteCalculator {
     current = scales.get(k);
   }
 
-  double heightToMidi(int y,int total) {
-    double note = (float)Math.floor(((total-y) / 8) + 30);
+  double valToMidi(int val, float max) {
+    double note = map(val,0,max,30,128);
     return current.transform((int)note);
   }
 
-  double heightToFreq(int y, int total) {
-    return midiToFreq(heightToMidi(y,total)); 
+  double valToFreq(int v, float max) {
+    return midiToFreq(valToMidi(v,max)); 
   }  
 
 }
 
+NoteCalculator noteCalculator = new NoteCalculator();
+
 class ScaleBasedFreqStrategy implements IFreqStrategy {
   NoteCalculator nc;
-  float high;
-  ScaleBasedFreqStrategy(float h) { 
-    high = h;
+  float range;
+  ScaleBasedFreqStrategy(float r) {
+    range = r; 
     nc = new NoteCalculator(); 
   }
   
-  float rawFreq(float y) { return (float)nc.heightToFreq((int)y,(int)high); }
-  float corrected(float f) { return f; } 
+  float rawFreq(float y) { return (float)nc.valToFreq((int)y,range); }
+  float corrected(float f) { return f; }
+  void setScale(String s) { nc.setCurrent(s); } 
 }

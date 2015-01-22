@@ -255,6 +255,11 @@ class KDiag extends BaseControlAutomaton implements IAutomatonToy, IMusicToy, IC
     }  
   }
 
+  ArrayList<UIListener> uils = new ArrayList<UIListener>(); 
+  void addUIListener(UIListener uil) { uils.add(uil); }
+  Iterable<UIListener> UIListeners() { return new IteratorCollection<UIListener>(uils.iterator()); }
+
+
   void keyPressed(int k) {
     switch (k) {
       case 32 : reset();

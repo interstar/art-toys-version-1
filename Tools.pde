@@ -68,4 +68,27 @@ class CyclingColor implements IColor {
   }
 }
 
+import java.util.*;
+public class IteratorCollection<E> extends AbstractCollection<E> implements Iterable<E> {
+    private Iterator<E> it;
 
+    public IteratorCollection(Iterator<E> it) {
+        this.it = it;
+    }
+
+
+    @Override
+    public int size() {
+        int cnt=0;
+        Iterator it=iterator();
+        while(it.hasNext()) {
+            it.next();
+            cnt++;
+        }
+        return cnt;
+    }
+
+    @Override
+    public Iterator<E> iterator() { return it; }
+
+}

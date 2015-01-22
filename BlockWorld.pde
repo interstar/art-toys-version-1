@@ -6,7 +6,7 @@ interface IBlockWorldFactory {
 
 
 
-abstract class BaseBlock extends BaseActor {
+abstract class BaseBlock extends MusicActor {
   
   boolean hit(int px, int py) {
     if (px < x) {return false;}
@@ -17,7 +17,7 @@ abstract class BaseBlock extends BaseActor {
   }  
 
   float getFreq() {
-    return height-y; 
+    return makeNote(height-y); 
   }
 
   void setX(int x) { this.x = x; }
@@ -107,13 +107,4 @@ class Glyph extends BaseBlock {
 
 }
 
-NoteCalculator noteCalculator = new NoteCalculator();
 
-class TunedGlyph extends Glyph {
-  
-  TunedGlyph(String name, int x, int y) {
-   super(name,x,y);    
-  }
-
-  float getFreq() { return (float)noteCalculator.heightToFreq((int)y,height); }
-}

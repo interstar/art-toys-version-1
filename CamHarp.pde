@@ -1,19 +1,24 @@
+import java.util.*;
 
 class Chime extends MusicActor implements Actor, IMusicToy {
   int rad,wide,high;
-  Chime(int r, int x, int y, int h) {
+  Chime(int r, int x, int y, int w, int h) {
     makeUid();
     rad  = r;
     high = h;
+    wide = w;
     this.x = x;
     this.y = y;
+    setFreqStrategy(new ScaleBasedFreqStrategy(wide));
   }
   
   boolean hit(int ox, int oy) {
     return close(ox,oy,x,y,rad);
   }
   
-  float getFreq() { return map(y,0,high,1000,0); }
+  float getFreq() { 
+    return makeNote(x);
+  }
   
   void draw() {
     stroke(255);
@@ -28,6 +33,7 @@ class CamHarp extends BaseMusicToy implements IAutomatonToy, ICamouseUser, IMusi
     
     ArrayList<Chime> chimes = new ArrayList<Chime>();
     
+    
     CamHarp(PApplet pa) {
       this.pa = pa;
       sizeInSetup();
@@ -40,9 +46,9 @@ class CamHarp extends BaseMusicToy implements IAutomatonToy, ICamouseUser, IMusi
     
     void reset() {
       chimes = new ArrayList<Chime>();
-      for (int r = 0; r<8;r++) {
-        for (int c = 0; c<4;c++) {
-          chimes.add(new Chime(15,(c+1)*130,40+r*70,480));
+      for (int r = 0; r<4;r++) {
+        for (int c = 0; c<12;c++) {
+          chimes.add(new Chime(15,(c+1)*50,50+r*110,640, 480));
         }
       }
     }
@@ -73,7 +79,7 @@ class CamHarp extends BaseMusicToy implements IAutomatonToy, ICamouseUser, IMusi
     void struck(int x, int y) {
       for (Chime c : chimes) {
         if (c.hit(x,y)) {
-          playNote(freqStrat.corrected(freqStrat.rawFreq(c.y)));
+          playNote(c.makeNote(c.x));
         }
       }
     }
@@ -93,5 +99,9 @@ class CamHarp extends BaseMusicToy implements IAutomatonToy, ICamouseUser, IMusi
 
     boolean isPlaying() { return true; } 
     void start() { }
-    void stop() {  }   
+    void stop() {  }
+
+    ArrayList<UIListener> uils = new ArrayList<UIListener>(); 
+    void addUIListener(UIListener uil) { uils.add(uil); }
+    Iterable<UIListener> UIListeners() { return new IteratorCollection<UIListener>(uils.iterator()); }
 }
