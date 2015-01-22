@@ -27,15 +27,15 @@ class Chime extends MusicActor implements Actor, IMusicToy {
   }
 }
 
-class CamHarp extends BaseMusicToy implements IAutomatonToy, ICamouseUser, IMusicToy {
+class CamHarp extends BaseMusicToy implements IAutomatonToy, ICamouseUser, IMusicToy, IBlockWorld {
     Camouse camouse;
     PApplet pa;
+    BaseBlockWorld chimes = new BaseBlockWorld();
     
     int noRows=4;
-    int rowOffset = 110; 
-    
-    List<Chime> chimes = new ArrayList<Chime>();
-    
+    int rowOffset = 110;
+    int rowLength = 12; 
+        
     NoteCalculator nc = new NoteCalculator(32,58);
     ScaleBasedFreqStrategy sbfs = new ScaleBasedFreqStrategy(nc,480);
     
@@ -49,17 +49,43 @@ class CamHarp extends BaseMusicToy implements IAutomatonToy, ICamouseUser, IMusi
     
     PApplet getApp() { return pa; }
     
-    void reset() {
+    void reset() {      
+      chimes = new BaseBlockWorld();
       for (int r = 0; r<noRows;r++) {
-        for (int c = 0; c<12;c++) {
-          chimes.add(new Chime(15,(c+1)*50,50+r*rowOffset,640, 480, sbfs));
+        for (int c = 0; c<rowLength;c++) {
+          addBlock(new Chime(15,(c+1)*50,50+r*rowOffset,640, 480, sbfs));
         }
       }
+
+      OSCObservingInstrument[] ois = {
+          new OSCObservingInstrument("127.0.0.1", 9004, "/channel0"),
+          new OSCObservingInstrument("127.0.0.1", 9004, "/channel1"),  
+          new OSCObservingInstrument("127.0.0.1", 9004, "/channel2"),  
+          new OSCObservingInstrument("127.0.0.1", 9004, "/channel3")};
+
+      int count=0;  
+      for (Actor c : itBlocks() ) {    
+          ((Chime)c).addObservingInstrument(ois[(int)(count/rowLength)]);
+          count++;
+      }
     }
-        
+
+    boolean isPlaying() { return true; }
+    void start() {}
+    void stop() {}
+    
+    boolean blockSelected() { return chimes.blockSelected(); }
+    void mousePressed() { chimes.mousePressed(); }
+    void mouseReleased() { chimes.mouseReleased(); }  
+    void mouseDragged() { chimes.mouseDragged(); }
+    Actor selectedBlock() throws NoSelectedBlockException { return chimes.selectedBlock(); }
+    Iterable<Actor> itBlocks() { return chimes.itBlocks(); }
+    void addBlock(Actor block) { chimes.addBlock(block); } 
+
+    
     void draw() {
       drawVideo();
-      for (Chime c : chimes) {  c.draw();  }
+      chimes.draw();
       drawCursor();
     }
     
@@ -70,6 +96,7 @@ class CamHarp extends BaseMusicToy implements IAutomatonToy, ICamouseUser, IMusi
     void sizeInSetup() { size(640,480); }
     
     void camouseStep() {}
+    
     void drawCursor() {
         stroke(255);
         fill(100,100,255,200);    
@@ -81,9 +108,9 @@ class CamHarp extends BaseMusicToy implements IAutomatonToy, ICamouseUser, IMusi
     } 
      
     void struck(int x, int y) {
-      for (Chime c : chimes) {
+      for (Actor c : chimes.itBlocks()) {
         if (c.hit(x,y)) {
-          c.playNote(c.makeNote(c.x));
+          ((Chime)c).playNote(((Chime)c).makeNote(c.getX()));
         }
       }
     }
@@ -97,12 +124,5 @@ class CamHarp extends BaseMusicToy implements IAutomatonToy, ICamouseUser, IMusi
     }
     
 
-    void mousePressed() {}
-    void mouseDragged() {}
-    void mouseReleased() {}
-
-    boolean isPlaying() { return true; } 
-    void start() { }
-    void stop() {  }
 
 }
