@@ -13,6 +13,7 @@ OscP5 oscP5 = new OscP5(this,9001); // one, instantiated once
 interface IObservingController {  
   void changed(String... params);
   void changed(float... params);
+  String diagnostic();
 }
 
 interface IObservingInstrument extends IObservingController {
@@ -61,6 +62,9 @@ class MinimObservingInstrument implements IObservingInstrument {
   void changed(String... params) {};
   void changed(float... params) {};  
   
+  String diagnostic() {
+    return "" + minim + ", " + out;
+  }
 }
 
 
@@ -119,5 +123,10 @@ class OSCObservingInstrument extends BaseOSCInstrument implements IObservingInst
   }
   
   void playNote(float freq) { changed(1,freq,50000,freq); }
+ 
+  String diagnostic() {
+    return "" + getRemoteLocation() + " // " + path;
+  }
+ 
   
 }

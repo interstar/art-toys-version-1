@@ -31,8 +31,12 @@ class CamHarp extends BaseMusicToy implements IAutomatonToy, ICamouseUser, IMusi
     Camouse camouse;
     PApplet pa;
     
-    ArrayList<Chime> chimes = new ArrayList<Chime>();
-    NoteCalculator nc = new NoteCalculator(32,46);
+    int noRows=4;
+    int rowOffset = 110; 
+    
+    List<Chime> chimes = new ArrayList<Chime>();
+    
+    NoteCalculator nc = new NoteCalculator(32,58);
     ScaleBasedFreqStrategy sbfs = new ScaleBasedFreqStrategy(nc,480);
     
     CamHarp(PApplet pa) {
@@ -46,10 +50,9 @@ class CamHarp extends BaseMusicToy implements IAutomatonToy, ICamouseUser, IMusi
     PApplet getApp() { return pa; }
     
     void reset() {
-      chimes = new ArrayList<Chime>();
-      for (int r = 0; r<4;r++) {
+      for (int r = 0; r<noRows;r++) {
         for (int c = 0; c<12;c++) {
-          chimes.add(new Chime(15,(c+1)*50,50+r*110,640, 480, sbfs));
+          chimes.add(new Chime(15,(c+1)*50,50+r*rowOffset,640, 480, sbfs));
         }
       }
     }
@@ -80,7 +83,7 @@ class CamHarp extends BaseMusicToy implements IAutomatonToy, ICamouseUser, IMusi
     void struck(int x, int y) {
       for (Chime c : chimes) {
         if (c.hit(x,y)) {
-          playNote(c.makeNote(c.x));
+          c.playNote(c.makeNote(c.x));
         }
       }
     }
@@ -102,7 +105,4 @@ class CamHarp extends BaseMusicToy implements IAutomatonToy, ICamouseUser, IMusi
     void start() { }
     void stop() {  }
 
-    ArrayList<UIListener> uils = new ArrayList<UIListener>(); 
-    void addUIListener(UIListener uil) { uils.add(uil); }
-    Iterable<UIListener> UIListeners() { return new IteratorCollection<UIListener>(uils.iterator()); }
 }

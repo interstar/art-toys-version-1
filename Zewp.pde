@@ -1,6 +1,7 @@
 interface IMover extends Actor {
   void sendOSCMessage();
-  void interact(ArrayList<Actor> blocks, ArrayList<IMover> movers);
+  void interact(Iterable<Actor> blocks, Iterable<IMover> movers);
+  int getId();
 }
 
 class Zewp extends MusicActor implements IMover, IMusicToy {
@@ -47,7 +48,7 @@ class Zewp extends MusicActor implements IMover, IMusicToy {
     }
 
 
-    boolean look_ahead(ArrayList<IMover> zewps, ArrayList<Actor> glyphs) {
+    boolean look_ahead(Iterable<IMover> zewps, Iterable<Actor> glyphs) {
       /* return true if something ahead, otherwise, false */  
       float px,py; // point we're testing
    
@@ -81,10 +82,10 @@ class Zewp extends MusicActor implements IMover, IMusicToy {
         return false;
     }
 
-    boolean zewp_in_front(int px, int py, ArrayList<IMover> zewps) {
-        for (int z=0;z<zewps.size();z++) {
-            if (z == id) { continue; /* don't test for self */ }
-            if (zewps.get(z).hit((int)px,(int)py)) {
+    boolean zewp_in_front(int px, int py, Iterable<IMover> zewps) {
+        for (IMover z : zewps) {        
+            if (z.getId() == id) { continue; /* don't test for self */ }
+            if (z.hit((int)px,(int)py)) {
                 return true;
             }
         }
@@ -92,9 +93,9 @@ class Zewp extends MusicActor implements IMover, IMusicToy {
     }
 
 
-    boolean glyph_in_front(int x, int y, ArrayList<Actor> glyphs) {
-        for (int i=0; i<glyphs.size(); i++) {
-            if (glyphs.get(i).hit((int)x,(int)y)) {
+    boolean glyph_in_front(int x, int y, Iterable<Actor> glyphs) {
+        for (Actor g : glyphs) {
+            if (g.hit((int)x,(int)y)) {
                 return true;
             }
         }
@@ -120,7 +121,7 @@ class Zewp extends MusicActor implements IMover, IMusicToy {
     }
 
 
-  void interact(ArrayList<Actor> blocks, ArrayList<IMover> movers) {
+  void interact(Iterable<Actor> blocks, Iterable<IMover> movers) {
       if (!alive) { return; }
   
       boolean ahead = look_ahead(movers,blocks);
@@ -172,10 +173,10 @@ class Zewp2 extends Zewp {
   float getFreq() { return freq; }
 
 
-  boolean glyph_in_front(int x, int y, ArrayList<Actor> glyphs) {
-        for (int i=0; i<glyphs.size(); i++) {
-            if (glyphs.get(i).hit((int)x,(int)y)) {
-                freq = glyphs.get(i).getFreq();
+  boolean glyph_in_front(int x, int y, Iterable<Actor> glyphs) {
+        for (Actor g : glyphs) {
+            if (g.hit((int)x,(int)y)) {
+                freq = g.getFreq();
                 newNote=1;
                 return true;
             }
@@ -184,11 +185,11 @@ class Zewp2 extends Zewp {
   }
 
 
-  boolean zewp_in_front(int px, int py, ArrayList<IMover> zewps) {
-      for (int z=0;z<zewps.size();z++) {
-          if (z == id) { continue; /* don't test for self */ }
-          if (zewps.get(z).hit((int)px,(int)py)) {
-                freq = zewps.get(z).getFreq();
+  boolean zewp_in_front(int px, int py, Iterable<IMover> zewps) {      
+      for (IMover z : zewps) { 
+          if (z.getId() == id) { continue; /* don't test for self */ }
+          if (z.hit((int)px,(int)py)) {
+                freq = z.getFreq();
                 newNote=1;            
               return true;
           }
@@ -202,6 +203,8 @@ class Zewp2 extends Zewp {
 class ZewpFactory implements IBlockWorldFactory {
   int noBlocks, noZewps;
   String backImg;
+
+
   ZewpFactory(String imgName, int noblocks, int nozewps) {
     noBlocks = noblocks;
     noZewps = nozewps;
@@ -239,11 +242,9 @@ class ZewpFactory implements IBlockWorldFactory {
 
 class ZewpWorld extends BaseControlAutomaton implements IAutomatonToy, IBlockWorld {
 
-  ArrayList<Actor> blocks;
   ArrayList<IMover> zewps;
+  BaseBlockWorld blocks = new BaseBlockWorld();
 
-  Actor selectedBlock;
-  boolean blockSelected;
   Random rnd;  
   
   PImage backImg;
@@ -258,9 +259,8 @@ class ZewpWorld extends BaseControlAutomaton implements IAutomatonToy, IBlockWor
     wide=backImg.width;
     high=backImg.height;  
 
-    blocks = new ArrayList<Actor>();
     zewps = new ArrayList<IMover>();
-    for (Actor b : bs) { blocks.add(b); }
+    for (Actor b : bs) { blocks.addBlock(b); }
     for (IMover z : zs) { zewps.add(z); }
     
     innerMusicToy.setFreqStrategy(fs);
@@ -276,14 +276,14 @@ class ZewpWorld extends BaseControlAutomaton implements IAutomatonToy, IBlockWor
 
   void nextStep() {
     for (IMover z : zewps) { 
-      z.interact(blocks,zewps);
+      z.interact(blocks.itBlocks(),new IteratorCollection<IMover>(zewps.iterator()));
     }  
   }
 
   
   void draw() {
     background(backImg);
-    for (Actor g : blocks) { g.draw(); }
+    blocks.draw();
     for (IMover z : zewps) { 
       z.draw(); 
     }  
@@ -316,32 +316,12 @@ class ZewpWorld extends BaseControlAutomaton implements IAutomatonToy, IBlockWor
     }    
   }
 
-  void mousePressed() {
-    for (Actor g : blocks) {
-      if (g.hit(mouseX,mouseY)) {
-        println("Hit " + g);
-        blockSelected=true;
-        selectedBlock=g;
-        break;
-      }
-    }
-  }
-
-  void mouseDragged() {
-    if (blockSelected) {
-      selectedBlock.setX(mouseX-(selectedBlock.getWidth()/2));
-      selectedBlock.setY(mouseY-(selectedBlock.getHeight()/2));   
-    }  
-  }
-  
-  void mouseReleased() {
-    blockSelected = false;
-  }
-
-  ArrayList<UIListener> uils = new ArrayList<UIListener>(); 
-  void addUIListener(UIListener uil) { uils.add(uil); }
-  Iterable<UIListener> UIListeners() { return new IteratorCollection<UIListener>(uils.iterator()); }
-
-  
+  boolean blockSelected() { return blocks.blockSelected(); }
+  void mousePressed() { blocks.mousePressed(); }
+  void mouseReleased() { blocks.mouseReleased(); }  
+  void mouseDragged() { blocks.mouseDragged(); }
+  Actor selectedBlock() throws NoSelectedBlockException { return blocks.selectedBlock(); }
+  Iterable<Actor> itBlocks() { return blocks.itBlocks(); }
+  void addBlock(Actor block) { blocks.addBlock(block); } 
 }
 

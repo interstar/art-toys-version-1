@@ -11,6 +11,7 @@ interface IMusicToy {
   float makeNote(float y);  
 }
 
+
 class BaseMusicToy implements IMusicToy {
   ArrayList<IObservingInstrument> oins = new ArrayList<IObservingInstrument>();
   IFreqStrategy freqStrat = new IdentityFreqStrategy();
@@ -24,7 +25,8 @@ class BaseMusicToy implements IMusicToy {
   float makeNote(float y) { return freqStrat.corrected(freqStrat.rawFreq(y)); }
   
   void playNote(float freq) {
-    for (IObservingInstrument oi : oins) {     
+    for (IObservingInstrument oi : obIns()) {
+       println(oi + " ::: " + freq + " :: " + oi.diagnostic());     
       oi.playNote(freq);
     }
   }

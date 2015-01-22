@@ -1,9 +1,78 @@
-interface IBlockWorld extends IAutomatonToy { }
+interface IBlockWorld extends IAutomatonToy {
+  // blockworlds contain draggable / droppable blocks
+  void mousePressed();
+  void mouseDragged();
+  void mouseReleased();
+  
+  boolean blockSelected();
+  Actor selectedBlock() throws NoSelectedBlockException;
+  Iterable<Actor> itBlocks();
+  void addBlock(Actor block);
+}
+
+
+class BaseBlockWorld extends BaseControlAutomaton implements IBlockWorld {
+  ArrayList<Actor> _blocks = new ArrayList<Actor>();
+  boolean _blockSelected;
+  Actor _selectedBlock;
+    
+  // dummies because of interface
+  void sizeInSetup(){}
+  void struck(int x, int y) {}
+  void reset(){}
+  void nextStep(){}
+  void keyPressed(int key) {}
+  
+  void draw() {
+    for (Actor b : itBlocks()) { b.draw(); }
+  }
+  
+  void addBlock(Actor block) { _blocks.add(block); }
+  
+  Iterable<Actor> itBlocks() {
+    return new IteratorCollection<Actor>(_blocks.iterator()); 
+  }
+  
+  void mousePressed() {
+    for (Actor b : itBlocks()) {
+      if (b.hit(mouseX,mouseY)) {
+        println("Hit " + b);
+        _blockSelected=true;
+        _selectedBlock=b;
+        break;
+      }
+    }
+  }
+
+  void mouseDragged() {
+    if (blockSelected()) {
+      Actor selected = _selectedBlock;
+      selected.setX(mouseX-(selected.getWidth()/2));
+      selected.setY(mouseY-(selected.getHeight()/2));   
+    }  
+  }
+  
+  void mouseReleased() {
+    _blockSelected = false;
+  }
+
+  boolean blockSelected() {return _blockSelected; }
+  
+  Actor selectedBlock() throws NoSelectedBlockException {
+    if (!blockSelected()) { throw new NoSelectedBlockException(); }
+    return _selectedBlock;
+  }
+    
+  
+}
+
+interface IBlockWorldAutomaton extends IBlockWorld, IAutomatonToy { }
 
 interface IBlockWorldFactory {
   IBlockWorld makeWorld();
 }
 
+class NoSelectedBlockException extends Exception { }
 
 
 abstract class BaseBlock extends MusicActor {
