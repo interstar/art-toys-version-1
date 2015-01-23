@@ -185,7 +185,7 @@ interface HasNetwork {
   int selected(int x, int y, int xOffset, int yOffset);
 }
 
-class KDiag extends BaseControlAutomaton implements IAutomatonToy, IMusicToy, ICamouseUser, HasNetwork {    
+class KDiag extends BaseControlAutomaton implements IAutomatonToy, IMusicToy, ICamouseUser, HasNetwork, IBlockWorld {    
   Network network;
 
   int currentNode; 
@@ -333,10 +333,15 @@ class KDiag extends BaseControlAutomaton implements IAutomatonToy, IMusicToy, IC
 
   PApplet getApp() { return pa; }
   
-  void mousePressed(){}
-  void mouseDragged(){}
-  void mouseReleased(){}
-
+    boolean blockSelected() { return network.blockSelected(); }
+    void mousePressed() { network.mousePressed(); }
+    void mouseReleased() { network.mouseReleased(); }  
+    void mouseDragged() { network.mouseDragged(); }
+    Actor selectedBlock() throws NoSelectedBlockException { return network.selectedBlock(); }
+    
+    void addBlock(Actor b) {network.addBlock(b); }
+    Iterable<Actor> itBlocks() { return network.itBlocks(); }
+    
 }
  
   

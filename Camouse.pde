@@ -8,11 +8,13 @@ interface ICamouseUser {
   
 }
 
-Capture video;
+Capture video = null;
 
 Capture globalVideo(PApplet applet) {
-    video = new Capture(applet, width, height);
-    video.start(); 
+    if (video == null) {
+      video = new Capture(applet, width, height);
+      video.start();
+    } 
     return video;  
 }
 
