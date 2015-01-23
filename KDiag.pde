@@ -12,17 +12,17 @@ class Arc {
 
 class EndOfSequenceException extends Exception {}
 
-class Node extends BaseActor implements Actor, IMusicToy {  
+class Node extends MusicActor implements Actor, IMusicToy {  
   ArrayList<Arc> nexts;
   double a, rad;
-  int x,y,currentWait;
+  int currentWait;
   
-  IMusicToy innerMusicToy = new BaseMusicToy();
-
-  Node(double a, double rad) {    
+  Node(double a, double rad) {
+    makeUid();    
     nexts = new ArrayList<Arc>();
     currentWait=0;
     newPosition(a,rad);
+    
   }
  
   void newPosition(double a, double rad) {
@@ -81,8 +81,8 @@ class Node extends BaseActor implements Actor, IMusicToy {
   // UI
 
   boolean hit(int ox, int oy) {
-    int dx = Math.abs(x-ox);
-    int dy = Math.abs(y-oy);
+    int dx = (int)Math.abs(x-ox);
+    int dy = (int)Math.abs(y-oy);
     if ( (dx<20) && (dy<20)) { return true; }
     return false;    
   }
@@ -101,21 +101,13 @@ class Node extends BaseActor implements Actor, IMusicToy {
     popStyle();    
   }  
 
-  void setFreqStrategy(IFreqStrategy fs) { innerMusicToy.setFreqStrategy(fs); }
-  IFreqStrategy getFreqStrategy() { return innerMusicToy.getFreqStrategy(); }
-  void playNote(float freq) { innerMusicToy.playNote(freq);  }
-  float makeNote(float v) { return innerMusicToy.makeNote(v); }
-  Iterable<IObservingInstrument> obIns() { return innerMusicToy.obIns();  }
-  void addObservingInstrument(IObservingInstrument oi) { innerMusicToy.addObservingInstrument(oi); }
+  float getFreq() { return map(getY(),-320,320,1000,0); }
   
-  float getFreq() { 
-    return innerMusicToy.makeNote(getY());
-  }
 } 
 
 
-class Network {
-  ArrayList<Node> nodes = new ArrayList<Node>();
+class Network extends BaseBlockWorld implements IBlockWorld {
+  
   int rad;
   int currentWait;
   
@@ -131,23 +123,24 @@ class Network {
         while (k==i) {
           k = (int)(Math.random()*noNodes);
         }
-        n.addArc(k,(int)(Math.random()*10),(int)(Math.random()*10));       
+        n.addArc(k,(int)(Math.random()*10),(int)(Math.random()*10));
       }
-      nodes.add(n);
+      addBlock(n);
     }
   }
   
   void draw() {
     pushMatrix();
     translate(320,240);
-    for (Node n : nodes) {
+    for (Actor an : itBlocks()) {
+      Node n = (Node)an;
       n.draw();
       for (Arc a : n.nexts) {
         stroke(255,200,100);
-        Node dest = nodes.get(a.destination);
-        line(n.x,n.y,dest.x,dest.y);
-        int hx = (n.x + (int)((dest.x-n.x)*0.9));
-        int hy = (n.y + (int)((dest.y-n.y)*0.9));
+        Node dest = (Node)(_blocks.get(a.destination));
+        line(n.getX(),n.getY(),dest.getX(),dest.getY());
+        int hx = (n.getX() + (int)((dest.getX()-n.getX())*0.9));
+        int hy = (n.getY() + (int)((dest.getY()-n.getY())*0.9));
         ellipse(hx,hy,5,5);
         
         noStroke();
@@ -161,7 +154,7 @@ class Network {
   
 
   int nextFrom(int from) throws EndOfSequenceException {
-    Node node = nodes.get(from);    
+    Node node = (Node)(_blocks.get(from));    
     int dest = node.chooseNext();    
     node.updateCounter(dest);
     currentWait = node.currentWait;
@@ -169,17 +162,21 @@ class Network {
   }
   
   int selected(int x, int y, int xOffset, int yOffset) {
-    for (int i=0;i<nodes.size();i++) {
-      if ((nodes.get(i)).hit(x-xOffset,y-yOffset)) { return i; }
+    int i=0;
+    for (Actor n : itBlocks()) {
+      if (n.hit(x-xOffset,y-yOffset)) { return i; }
+      i++;
     }
     return -1;   
   }
 
-  Node getNode(int i) { return nodes.get(i); }
+  Node getNode(int i) { return (Node)_blocks.get(i); }
  
   void rotate(float da) {
-    for (Node n : nodes) { n.rotate(da); }
-  } 
+    for (Actor n : itBlocks()) { ((Node)n).rotate(da); }
+  }
+ 
+  
 }
 
 interface HasNetwork {
@@ -188,21 +185,23 @@ interface HasNetwork {
   int selected(int x, int y, int xOffset, int yOffset);
 }
 
-class KDiag extends BaseControlAutomaton implements IAutomatonToy, IMusicToy, ICamouseUser {    
+class KDiag extends BaseControlAutomaton implements IAutomatonToy, IMusicToy, ICamouseUser, HasNetwork {    
   Network network;
-  IMusicToy innerMusicToy = new BaseMusicToy();
 
   int currentNode; 
   int wait = 20;
 
   Camouse camouse;
   PApplet pa;
+
+  IObservingInstrument mainObservingInstrument;
   
-  KDiag(PApplet pa, int aRad, int noNodes, int arcsPerNode) {
+  KDiag(PApplet pa, int aRad, int noNodes, int arcsPerNode, IObservingInstrument oi) {
     this.pa = pa;
     sizeInSetup();
     camouse = new Camouse(pa); 
-    recreateNetwork(aRad,noNodes,arcsPerNode); 
+    recreateNetwork(aRad,noNodes,arcsPerNode);
+    addObservingInstrument(oi);
   }
   
   Network getNetwork() { return network; }
@@ -216,15 +215,47 @@ class KDiag extends BaseControlAutomaton implements IAutomatonToy, IMusicToy, IC
   void recreateNetwork(int aRad, int noNodes, int arcsPerNode) { 
     network = new Network(aRad,noNodes,arcsPerNode);
     currentNode = 0;     
+    addObservingInstrument(mainObservingInstrument);
   }
- 
-  void addObservingInstrument(IObservingInstrument oi) { innerMusicToy.addObservingInstrument(oi); }
-  void playNote(float freq) { innerMusicToy.playNote(freq); }
-  Iterable<IObservingInstrument> obIns() { return innerMusicToy.obIns(); }
-  void setFreqStrategy(IFreqStrategy fs) { innerMusicToy.setFreqStrategy(fs); }
-  IFreqStrategy getFreqStrategy() { return innerMusicToy.getFreqStrategy(); }
-  float makeNote(float y) { return innerMusicToy.makeNote(y); }
 
+ 
+  void addObservingInstrument(IObservingInstrument oi) {
+     mainObservingInstrument = oi;
+     for (Actor an : network.itBlocks()) {
+        Node n = (Node)an;   
+        n.addObservingInstrument(oi);
+     } 
+  }
+
+  Node getCurrentNode() { return network.getNode(currentNode); }
+  
+  void playNote(float f) {
+    getCurrentNode().playNote(f);
+  }
+
+  Iterable<IObservingInstrument> obIns() { 
+    if (network._blocks.size() == 0) { return new ArrayList<IObservingInstrument>(); }
+    return getCurrentNode().obIns();     
+  }
+  
+  void setFreqStrategy(IFreqStrategy fs) { 
+     for (Actor an : network.itBlocks()) {
+        Node n = (Node)an;   
+        n.setFreqStrategy(fs);
+     }
+  }
+  
+  IFreqStrategy getFreqStrategy() {
+    if (network._blocks.size() == 0) { return new IdentityFreqStrategy(); }
+    return getCurrentNode().getFreqStrategy();     
+  }
+  
+  float makeNote(float y) { return getCurrentNode().makeNote(y); }
+
+  void playCurrentNote() {
+    float f = makeNote(getCurrentNode().getY());
+    playNote(f);
+  }
   
   void nextStep() {
     camouseStep();
@@ -233,8 +264,7 @@ class KDiag extends BaseControlAutomaton implements IAutomatonToy, IMusicToy, IC
       try {
         currentNode = network.nextFrom(currentNode);
         wait = network.currentWait*5;
-        Node node = network.getNode(currentNode);
-        playNote(innerMusicToy.getFreqStrategy().corrected(innerMusicToy.getFreqStrategy().rawFreq(node.y)));      
+        playCurrentNote();
       } catch (EndOfSequenceException e) {
         println("End of sequence from " + currentNode);
         currentNode = 0;
@@ -247,7 +277,7 @@ class KDiag extends BaseControlAutomaton implements IAutomatonToy, IMusicToy, IC
   void draw() {
     drawVideo();
     network.draw();
-    Node cNode = network.nodes.get(currentNode);
+    Node cNode = (Node)(network._blocks.get(currentNode));
     pushMatrix();
       translate(320,240);
       cNode.drawHighlighted();
@@ -260,8 +290,7 @@ class KDiag extends BaseControlAutomaton implements IAutomatonToy, IMusicToy, IC
     
     if (find > -1) { 
       start();
-      Node node = network.nodes.get(currentNode);
-      playNote(innerMusicToy.getFreqStrategy().corrected(innerMusicToy.getFreqStrategy().rawFreq(node.y)));  
+      playCurrentNote();  
     }  
   }
 
@@ -288,13 +317,12 @@ class KDiag extends BaseControlAutomaton implements IAutomatonToy, IMusicToy, IC
 
   void reset() {
     recreateNetwork(240, 15 ,6);
-    setFreqStrategy(new UncertainY(height,100));    
+    setFreqStrategy(new UncertainY(height,100));       
   }
 
 
   void camouseStep() {
-      struck(camouse.x(),camouse.y());
-      println("camouse step");
+      struck(camouse.x(),camouse.y());      
   }
 
   void drawCursor() {

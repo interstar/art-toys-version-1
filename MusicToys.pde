@@ -26,7 +26,6 @@ class BaseMusicToy implements IMusicToy {
   
   void playNote(float freq) {
     for (IObservingInstrument oi : obIns()) {
-       println(oi + " ::: " + freq + " :: " + oi.diagnostic());     
       oi.playNote(freq);
     }
   }
@@ -35,13 +34,16 @@ class BaseMusicToy implements IMusicToy {
 
 abstract class MusicActor extends BaseActor implements IMusicToy, Actor {
     IMusicToy innerMusicToy = new BaseMusicToy();
+    
     IFreqStrategy getFreqStrategy() { return innerMusicToy.getFreqStrategy(); }
     void setFreqStrategy(IFreqStrategy fs) { innerMusicToy.setFreqStrategy(fs); }
     float makeNote(float y) { return innerMusicToy.makeNote(y); }
     void playNote(float freq) { innerMusicToy.playNote(freq); }
     
     Iterable<IObservingInstrument> obIns() { return innerMusicToy.obIns(); }
-    void addObservingInstrument(IObservingInstrument oi) { innerMusicToy.addObservingInstrument(oi); }
+    void addObservingInstrument(IObservingInstrument oi) {     
+      innerMusicToy.addObservingInstrument(oi); 
+    }
     
     abstract boolean hit(int x, int y);
     abstract float getFreq();  
@@ -158,7 +160,6 @@ class NoteCalculator {
   double valToMidi(int val, float max) {
     double note = map(val,0,max,midiMin,midiMax);
     int m = current.transform((int)note);
-    println("note " + noteName(m));
     return m;
   }
 

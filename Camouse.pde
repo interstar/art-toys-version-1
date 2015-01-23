@@ -8,6 +8,14 @@ interface ICamouseUser {
   
 }
 
+Capture video;
+
+Capture globalVideo(PApplet applet) {
+    video = new Capture(applet, width, height);
+    video.start(); 
+    return video;  
+}
+
 class Camouse {
 
   int numPixels;
@@ -21,9 +29,7 @@ class Camouse {
   PImage v2;
 
   Camouse(PApplet applet) {
-    video = new Capture(applet, width, height);
-    video.start(); 
-
+    video = globalVideo(applet);
     numPixels = video.width * video.height;
 
     previousFrame = new int[numPixels];

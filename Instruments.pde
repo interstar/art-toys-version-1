@@ -122,7 +122,9 @@ class OSCObservingInstrument extends BaseOSCInstrument implements IObservingInst
      oscP5.send( (new OscMessageFactory(path)).make(params), myRemoteLocation); 
   }
   
-  void playNote(float freq) { changed(1,freq,50000,freq); }
+  void playNote(float freq) {
+    changed(1,freq,50000,freq); 
+  }
  
   String diagnostic() {
     return "" + getRemoteLocation() + " // " + path;
