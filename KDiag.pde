@@ -12,13 +12,14 @@ class Arc {
 
 class EndOfSequenceException extends Exception {}
 
-class Node {  
+class Node extends BaseActor implements Actor, IMusicToy {  
   ArrayList<Arc> nexts;
   double a, rad;
   int x,y,currentWait;
+  
+  IMusicToy innerMusicToy = new BaseMusicToy();
 
-   
-  Node(double a, double rad) {
+  Node(double a, double rad) {    
     nexts = new ArrayList<Arc>();
     currentWait=0;
     newPosition(a,rad);
@@ -100,6 +101,16 @@ class Node {
     popStyle();    
   }  
 
+  void setFreqStrategy(IFreqStrategy fs) { innerMusicToy.setFreqStrategy(fs); }
+  IFreqStrategy getFreqStrategy() { return innerMusicToy.getFreqStrategy(); }
+  void playNote(float freq) { innerMusicToy.playNote(freq);  }
+  float makeNote(float v) { return innerMusicToy.makeNote(v); }
+  Iterable<IObservingInstrument> obIns() { return innerMusicToy.obIns();  }
+  void addObservingInstrument(IObservingInstrument oi) { innerMusicToy.addObservingInstrument(oi); }
+  
+  float getFreq() { 
+    return innerMusicToy.makeNote(getY());
+  }
 } 
 
 

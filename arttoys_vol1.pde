@@ -6,16 +6,13 @@ Random rnd = new Random();;
 
 CamHarp makeCamHarp() {
   CamHarp h = new CamHarp(this);
-  //h.addObservingInstrument(new MinimObservingInstrument());
-  
-
   return h;
 }
 
 void reset() {
-  //toy = new KDiag(this,240,15,6);
+  toy = new KDiag(this,240,15,6);
   //toy = (new ZewpFactory("bg.png",12,10)).makeWorld();
-  toy = makeCamHarp();
+  //toy = makeCamHarp();
   toy.reset();
   toy.sizeInSetup();  
 }
