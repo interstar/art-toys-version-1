@@ -123,7 +123,7 @@ class Network extends BaseBlockWorld implements IBlockWorld {
         while (k==i) {
           k = (int)(Math.random()*noNodes);
         }
-        n.addArc(k,(int)(Math.random()*10),(int)(Math.random()*10));
+        n.addArc(k,(int)(Math.random()*50),(int)(Math.random()*50));
       }
       addBlock(n);
     }
