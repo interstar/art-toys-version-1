@@ -7,8 +7,7 @@ import ddf.minim.ugens.*;
 Minim minim;
 AudioOutput out;
 
-OscP5 oscP5 = new OscP5(this,9001); // one, instantiated once  
-
+OscP5 oscP5 = new OscP5(this,9001); // one, instantiated once 
 
 interface IObservingController {  
   void changed(String... params);
@@ -123,7 +122,8 @@ class OSCObservingInstrument extends BaseOSCInstrument implements IObservingInst
   }
   
   void playNote(float freq) {
-    changed(1,freq,50000,freq); 
+    //changed(1,freq,50000,freq);
+    changed((int)map(freq,0,1000,1,127),80,2,3); 
   }
  
   String diagnostic() {
