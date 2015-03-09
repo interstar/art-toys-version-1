@@ -167,6 +167,31 @@ class NoteCalculator {
     return midiToFreq(valToMidi(v,max)); 
   }  
 
+  void keyPressedUpdate(int k) {
+    // convenience function to update the scale based on one of the 
+    // number keys. Used in several toys.
+    switch (k) {
+    case '0' : 
+      setCurrent("chromatic"); break;
+    case '1' : 
+      setCurrent("major"); break;
+    case '2' : 
+      setCurrent("minor"); break;
+    case '3' : 
+      setCurrent("diminished"); break;
+    case '4' : 
+      setCurrent("arab"); break;
+    case '5' : 
+      setCurrent("debussy"); break;
+    case '6' : 
+      setCurrent("gypsy"); break;
+    case '7' : 
+      setCurrent("pent1"); break;
+    case '8' : 
+      setCurrent("pent2"); break;
+    }
+  }
+
 }
 
 
@@ -185,7 +210,12 @@ class ScaleBasedFreqStrategy implements IFreqStrategy {
   float corrected(float f) { return f; }
   void setScale(String s) { nc.setCurrent(s); }
  
-  void controlChange(String key, int val) {}
+  void controlChange(String key, int val) {
+    if (key == "scale") {
+      nc.keyPressedUpdate(val);
+    }
+  }
+  
   void controlChange(String key, String val) {
     if (key == "scale") { 
       setScale(val);
@@ -194,3 +224,7 @@ class ScaleBasedFreqStrategy implements IFreqStrategy {
   }
   
 }
+
+
+
+

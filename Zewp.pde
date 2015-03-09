@@ -294,26 +294,7 @@ class ZewpWorld extends BaseControlAutomaton implements IAutomatonToy, IBlockWor
   }
 
   void keyPressed(int k) {
-  switch (key) {
-    case '0' : 
-      setScale("chromatic"); break;
-    case '1' : 
-      setScale("major"); break;
-    case '2' : 
-      setScale("minor"); break;
-    case '3' : 
-      setScale("diminished"); break;
-    case '4' : 
-      setScale("arab"); break;
-    case '5' : 
-      setScale("debussy"); break;
-    case '6' : 
-      setScale("gypsy"); break;
-    case '7' : 
-      setScale("pent1"); break;
-    case '8' : 
-      setScale("pent2"); break;
-    }    
+    innerMusicToy.getFreqStrategy().controlChange("scale",k);
   }
 
   boolean blockSelected() { return blocks.blockSelected(); }
