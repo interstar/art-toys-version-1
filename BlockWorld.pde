@@ -15,7 +15,8 @@ abstract class AbstractBaseBlockWorld extends BaseControlAutomaton implements IB
   ArrayList<IActor> _blocks;
   boolean _blockSelected;
   IActor _selectedBlock;
-    
+
+  IBus innerObservingBus;
   
   void draw() {
     for (IActor b : itBlocks()) { b.draw(); }
@@ -55,7 +56,12 @@ abstract class AbstractBaseBlockWorld extends BaseControlAutomaton implements IB
   IActor selectedBlock() throws NoSelectedBlockException {
     if (!blockSelected()) { throw new NoSelectedBlockException(); }
     return _selectedBlock;
-  }  
+  }
+
+  void setBus(IBus bus) { innerObservingBus = bus; }
+  IBus getBus() { return innerObservingBus; }
+  void setChannel(int c)  {}
+    
 }
 
 class BaseBlockWorld extends AbstractBaseBlockWorld {
@@ -69,6 +75,9 @@ class BaseBlockWorld extends AbstractBaseBlockWorld {
   void reset(){}
   void nextStep(){}
   void keyPressed(int key) {}
+  
+  void postToBus() {}
+  String diagnostic() { return "An instance of BaseBlockWorld"; }
 
 }
 
@@ -82,7 +91,7 @@ interface IBlockWorldFactory {
 class NoSelectedBlockException extends Exception { }
 
 
-abstract class BaseBlock extends MusicActor {
+abstract class BaseBlock extends BaseActor {
   
   boolean hit(int px, int py) {
     if (px < x) {return false;}
@@ -91,10 +100,6 @@ abstract class BaseBlock extends MusicActor {
     if (py > y+high) {return false;}
     return true;    
   }  
-
-  float getFreq() {
-    return makeNote(height-y); 
-  }
 
   void setX(int x) { this.x = x; }
   void setY(int y) { this.y = y; }

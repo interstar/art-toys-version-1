@@ -13,8 +13,6 @@ interface IActor {
   int getWidth();
   int getHeight();
   
-  float getFreq();
-  
   int makeUid();
   
   void draw();  
@@ -40,7 +38,6 @@ abstract class BaseActor implements IActor {
     return id;
   }
   abstract boolean hit(int px, int py);
-  abstract float getFreq();
 }
 
 

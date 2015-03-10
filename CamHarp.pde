@@ -1,24 +1,36 @@
 import java.util.*;
 
-class Chime extends MusicActor implements IActor, IMusicToy {
-  int rad,wide,high;
-  Chime(int r, int x, int y, int w, int h, IFreqStrategy fs) {
+class Chime extends BaseActor implements IActor, IObservable {
+  int rad,wide,high,channel;
+  IBus innerObservingBus;
+  
+  Chime(int r, int x, int y, int w, int h) {
     makeUid();
     rad  = r;
     high = h;
     wide = w;
     this.x = x;
-    this.y = y;
-    setFreqStrategy(fs);
+    this.y = y;    
   }
   
   boolean hit(int ox, int oy) {
     return close(ox,oy,x,y,rad);
   }
+    
+  void setChannel(int c) { channel = c; }
   
-  float getFreq() { 
-    return makeNote(x);
+  void postToBus() {
+    IMessage m = new SimpleMessage();
+    m.fSet(map(this.x,0,wide,0,1), map(this.y,0,high,0,1),0,0,0,0);
+    innerObservingBus.put(channel,m);
+    m = new SimpleMessage();
+    m.bang();
+    innerObservingBus.put(channel,m);
   }
+  
+  void setBus(IBus bus) { innerObservingBus = bus; }
+  IBus getBus() { return innerObservingBus; }
+  String diagnostic() { return "A Chime " + this.x + ", " + this.y; }
   
   void draw() {
     stroke(255);
@@ -27,23 +39,20 @@ class Chime extends MusicActor implements IActor, IMusicToy {
   }
 }
 
-class CamHarp extends BaseMusicToy implements IAutomatonToy, ICamouseUser, IMusicToy, IBlockWorld {
+class CamHarp implements IAutomatonToy, ICamouseUser, IBlockWorld {
     Camouse camouse;
     PApplet pa;
     BaseBlockWorld chimes = new BaseBlockWorld();
+    IBus innerObservingBus; 
     
     int noRows=4;
     int rowOffset = 110;
     int rowLength = 12; 
-        
-    NoteCalculator nc = new NoteCalculator(32,58);
-    ScaleBasedFreqStrategy sbfs = new ScaleBasedFreqStrategy(nc,480);
-    
+            
     CamHarp(PApplet pa) {
       this.pa = pa;
       sizeInSetup();
       camouse = new Camouse(pa);
-      setFreqStrategy(sbfs);
       reset();      
     }
     
@@ -53,20 +62,8 @@ class CamHarp extends BaseMusicToy implements IAutomatonToy, ICamouseUser, IMusi
       chimes = new BaseBlockWorld();
       for (int r = 0; r<noRows;r++) {
         for (int c = 0; c<rowLength;c++) {
-          addBlock(new Chime(15,(c+1)*50,50+r*rowOffset,640, 480, sbfs));
+          addBlock(new Chime(15,(c+1)*50,50+r*rowOffset,640, 480));
         }
-      }
-
-      OSCObservingInstrument[] ois = {
-          new OSCObservingInstrument("127.0.0.1", 9004, "/channel0"),
-          new OSCObservingInstrument("127.0.0.1", 9004, "/channel1"),  
-          new OSCObservingInstrument("127.0.0.1", 9004, "/channel2"),  
-          new OSCObservingInstrument("127.0.0.1", 9004, "/channel3")};
-
-      int count=0;  
-      for (IActor c : itBlocks() ) {    
-          ((Chime)c).addObservingInstrument(ois[(int)(count/rowLength)]);
-          count++;
       }
     }
 
@@ -110,7 +107,7 @@ class CamHarp extends BaseMusicToy implements IAutomatonToy, ICamouseUser, IMusi
     void struck(int x, int y) {
       for (IActor c : chimes.itBlocks()) {
         if (c.hit(x,y)) {
-          ((Chime)c).playNote(((Chime)c).makeNote(c.getX()));
+          ((Chime)c).postToBus();
         }
       }
     }
@@ -122,7 +119,10 @@ class CamHarp extends BaseMusicToy implements IAutomatonToy, ICamouseUser, IMusi
            break; 
       }
     }
-    
-
-
+ 
+  void setChannel(int c) { }   
+  void setBus(IBus bus) { innerObservingBus = bus; }
+  void postToBus() { }
+  String diagnostic() { return "A CamHarp"; }
+  IBus getBus() { return innerObservingBus; }  
 }

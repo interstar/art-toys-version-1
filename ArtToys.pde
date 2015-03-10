@@ -8,7 +8,7 @@ interface IUIListener {
   
 }
 
-interface IArtToy extends IUIListener {
+interface IArtToy extends IUIListener, IObservable   {
   void reset();
   void sizeInSetup();
   

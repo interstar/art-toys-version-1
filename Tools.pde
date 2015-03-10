@@ -1,3 +1,6 @@
+interface IDiagnostic {
+  String diagnostic();
+}
 
 //Geometry
 boolean approx(float a, float b, float marg) {
