@@ -1,6 +1,6 @@
 import java.util.*;
 
-class Chime extends MusicActor implements Actor, IMusicToy {
+class Chime extends MusicActor implements IActor, IMusicToy {
   int rad,wide,high;
   Chime(int r, int x, int y, int w, int h, IFreqStrategy fs) {
     makeUid();
@@ -64,7 +64,7 @@ class CamHarp extends BaseMusicToy implements IAutomatonToy, ICamouseUser, IMusi
           new OSCObservingInstrument("127.0.0.1", 9004, "/channel3")};
 
       int count=0;  
-      for (Actor c : itBlocks() ) {    
+      for (IActor c : itBlocks() ) {    
           ((Chime)c).addObservingInstrument(ois[(int)(count/rowLength)]);
           count++;
       }
@@ -78,9 +78,9 @@ class CamHarp extends BaseMusicToy implements IAutomatonToy, ICamouseUser, IMusi
     void mousePressed() { chimes.mousePressed(); }
     void mouseReleased() { chimes.mouseReleased(); }  
     void mouseDragged() { chimes.mouseDragged(); }
-    Actor selectedBlock() throws NoSelectedBlockException { return chimes.selectedBlock(); }
-    Iterable<Actor> itBlocks() { return chimes.itBlocks(); }
-    void addBlock(Actor block) { chimes.addBlock(block); } 
+    IActor selectedBlock() throws NoSelectedBlockException { return chimes.selectedBlock(); }
+    Iterable<IActor> itBlocks() { return chimes.itBlocks(); }
+    void addBlock(IActor block) { chimes.addBlock(block); } 
 
     
     void draw() {
@@ -108,7 +108,7 @@ class CamHarp extends BaseMusicToy implements IAutomatonToy, ICamouseUser, IMusi
     } 
      
     void struck(int x, int y) {
-      for (Actor c : chimes.itBlocks()) {
+      for (IActor c : chimes.itBlocks()) {
         if (c.hit(x,y)) {
           ((Chime)c).playNote(((Chime)c).makeNote(c.getX()));
         }

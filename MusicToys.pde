@@ -32,7 +32,7 @@ class BaseMusicToy implements IMusicToy {
 }
 
 
-abstract class MusicActor extends BaseActor implements IMusicToy, Actor {
+abstract class MusicActor extends BaseActor implements IMusicToy, IActor {
     IMusicToy innerMusicToy = new BaseMusicToy();
     
     IFreqStrategy getFreqStrategy() { return innerMusicToy.getFreqStrategy(); }

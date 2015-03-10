@@ -1,6 +1,6 @@
 Uids _ids = new Uids();
 
-interface Actor {  
+interface IActor {  
   int getX();
   int getY();
   void setX(int x);
@@ -20,7 +20,7 @@ interface Actor {
   void draw();  
 }
 
-abstract class BaseActor implements Actor {
+abstract class BaseActor implements IActor {
   public float x,y;
   public int id=-1;
   int wide,high;

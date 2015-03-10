@@ -12,7 +12,7 @@ class Arc {
 
 class EndOfSequenceException extends Exception {}
 
-class Node extends MusicActor implements Actor, IMusicToy {  
+class Node extends MusicActor implements IActor, IMusicToy {  
   ArrayList<Arc> nexts;
   double a, rad;
   int currentWait;
@@ -132,7 +132,7 @@ class Network extends BaseBlockWorld implements IBlockWorld {
   void draw() {
     pushMatrix();
     translate(320,240);
-    for (Actor an : itBlocks()) {
+    for (IActor an : itBlocks()) {
       Node n = (Node)an;
       n.draw();
       for (Arc a : n.nexts) {
@@ -163,7 +163,7 @@ class Network extends BaseBlockWorld implements IBlockWorld {
   
   int selected(int x, int y, int xOffset, int yOffset) {
     int i=0;
-    for (Actor n : itBlocks()) {
+    for (IActor n : itBlocks()) {
       if (n.hit(x-xOffset,y-yOffset)) { return i; }
       i++;
     }
@@ -173,7 +173,7 @@ class Network extends BaseBlockWorld implements IBlockWorld {
   Node getNode(int i) { return (Node)_blocks.get(i); }
  
   void rotate(float da) {
-    for (Actor n : itBlocks()) { ((Node)n).rotate(da); }
+    for (IActor n : itBlocks()) { ((Node)n).rotate(da); }
   }
  
   
@@ -221,7 +221,7 @@ class KDiag extends BaseControlAutomaton implements IAutomatonToy, IMusicToy, IC
  
   void addObservingInstrument(IObservingInstrument oi) {
      mainObservingInstrument = oi;
-     for (Actor an : network.itBlocks()) {
+     for (IActor an : network.itBlocks()) {
         Node n = (Node)an;   
         n.addObservingInstrument(oi);
      } 
@@ -239,7 +239,7 @@ class KDiag extends BaseControlAutomaton implements IAutomatonToy, IMusicToy, IC
   }
   
   void setFreqStrategy(IFreqStrategy fs) { 
-     for (Actor an : network.itBlocks()) {
+     for (IActor an : network.itBlocks()) {
         Node n = (Node)an;   
         n.setFreqStrategy(fs);
      }
@@ -337,10 +337,10 @@ class KDiag extends BaseControlAutomaton implements IAutomatonToy, IMusicToy, IC
     void mousePressed() { network.mousePressed(); }
     void mouseReleased() { network.mouseReleased(); }  
     void mouseDragged() { network.mouseDragged(); }
-    Actor selectedBlock() throws NoSelectedBlockException { return network.selectedBlock(); }
+    IActor selectedBlock() throws NoSelectedBlockException { return network.selectedBlock(); }
     
-    void addBlock(Actor b) {network.addBlock(b); }
-    Iterable<Actor> itBlocks() { return network.itBlocks(); }
+    void addBlock(IActor b) {network.addBlock(b); }
+    Iterable<IActor> itBlocks() { return network.itBlocks(); }
     
 }
  

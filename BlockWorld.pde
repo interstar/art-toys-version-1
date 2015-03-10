@@ -5,36 +5,30 @@ interface IBlockWorld extends IAutomatonToy {
   void mouseReleased();
   
   boolean blockSelected();
-  Actor selectedBlock() throws NoSelectedBlockException;
-  Iterable<Actor> itBlocks();
-  void addBlock(Actor block);
+  IActor selectedBlock() throws NoSelectedBlockException;
+  Iterable<IActor> itBlocks();
+  void addBlock(IActor block);
 }
 
 
-class BaseBlockWorld extends BaseControlAutomaton implements IBlockWorld {
-  ArrayList<Actor> _blocks = new ArrayList<Actor>();
+abstract class AbstractBaseBlockWorld extends BaseControlAutomaton implements IBlockWorld {
+  ArrayList<IActor> _blocks;
   boolean _blockSelected;
-  Actor _selectedBlock;
+  IActor _selectedBlock;
     
-  // dummies because of interface
-  void sizeInSetup(){}
-  void struck(int x, int y) {}
-  void reset(){}
-  void nextStep(){}
-  void keyPressed(int key) {}
   
   void draw() {
-    for (Actor b : itBlocks()) { b.draw(); }
+    for (IActor b : itBlocks()) { b.draw(); }
   }
   
-  void addBlock(Actor block) { _blocks.add(block); }
+  void addBlock(IActor block) { _blocks.add(block); }
   
-  Iterable<Actor> itBlocks() {
-    return new IteratorCollection<Actor>(_blocks.iterator()); 
+  Iterable<IActor> itBlocks() {
+    return new IteratorCollection<IActor>(_blocks.iterator()); 
   }
   
   void mousePressed() {
-    for (Actor b : itBlocks()) {
+    for (IActor b : itBlocks()) {
       if (b.hit(mouseX,mouseY)) {
         println("Hit " + b);
         _blockSelected=true;
@@ -46,7 +40,7 @@ class BaseBlockWorld extends BaseControlAutomaton implements IBlockWorld {
 
   void mouseDragged() {
     if (blockSelected()) {
-      Actor selected = _selectedBlock;
+      IActor selected = _selectedBlock;
       selected.setX(mouseX-(selected.getWidth()/2));
       selected.setY(mouseY-(selected.getHeight()/2));   
     }  
@@ -58,13 +52,26 @@ class BaseBlockWorld extends BaseControlAutomaton implements IBlockWorld {
 
   boolean blockSelected() {return _blockSelected; }
   
-  Actor selectedBlock() throws NoSelectedBlockException {
+  IActor selectedBlock() throws NoSelectedBlockException {
     if (!blockSelected()) { throw new NoSelectedBlockException(); }
     return _selectedBlock;
-  }
-    
-  
+  }  
 }
+
+class BaseBlockWorld extends AbstractBaseBlockWorld {
+  
+  BaseBlockWorld() {
+     _blocks = new ArrayList<IActor>();
+  }
+  // dummies because of interface
+  void sizeInSetup(){}
+  void struck(int x, int y) {}
+  void reset(){}
+  void nextStep(){}
+  void keyPressed(int key) {}
+
+}
+
 
 interface IBlockWorldAutomaton extends IBlockWorld, IAutomatonToy { }
 
