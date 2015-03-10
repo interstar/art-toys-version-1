@@ -250,11 +250,9 @@ class KDiag extends BaseControlAutomaton implements IAutomatonToy, ICamouseUser,
   }
   
   void playEvent(Node n) {
-    IMessage m = new SimpleMessage();
-    m.fSet( map(n.getX(),0,height,0,1), map(n.getY(),0,width,0,1), 0, 0, 0, 0);
+    IMessage m = new FloatMessage( map(n.getX(),0,height,0,1), map(n.getY(),0,width,0,1), 0, 0, 0, 0);
     innerObservingBus.put(getChannel(),m);
-    m = new SimpleMessage();
-    m.bang();
+    m = new BangMessage();
     innerObservingBus.put(getChannel(),m);
   }
   

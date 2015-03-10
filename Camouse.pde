@@ -128,8 +128,7 @@ class Camouse implements IObservable {
   IBus getBus() { return innerObservingBus; }
   void setBus(IBus bus) { innerObservingBus = bus; }
   void postToBus() { 
-    IMessage m = new SimpleMessage();
-    m.fSet( map(x(),0,width,0,1), map(y(),0,height,0,1), 0, 0, 0, 0);
+    IMessage m = new FloatMessage( map(x(),0,width,0,1), map(y(),0,height,0,1), 0, 0, 0, 0);
     innerObservingBus.put(channel, m);      
   }
   void setChannel(int c) { channel = c; }

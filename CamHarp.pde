@@ -21,10 +21,9 @@ class Chime extends BaseActor implements IActor, IObservable {
   int  getChannel() { return channel; }
   
   void postToBus() {
-    IMessage m = new SimpleMessage(map(this.x,0,wide,0,1), map(this.y,0,high,0,1),0,0,0,0);
+    IMessage m = new FloatMessage(map(this.x,0,wide,0,1), map(this.y,0,high,0,1),0,0,0,0);
     innerObservingBus.put(channel,m);
-    m = new SimpleMessage();
-    m.bang();
+    m = new BangMessage();
     innerObservingBus.put(channel,m);
   }
   

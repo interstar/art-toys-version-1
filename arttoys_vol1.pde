@@ -51,6 +51,7 @@ void draw() {
   mainBus.reset();
   toy.nextStep();  
   toy.draw();
+  toy.postToBus();
   println(mainBus.diagnostic());
   
 }

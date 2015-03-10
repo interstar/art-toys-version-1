@@ -168,8 +168,14 @@ class Zewp extends BaseActor implements IMover, IObservable {
 
   void setChannel(int c) { channel = c; }
   int  getChannel() { return channel; }
+  
   void postToBus() {
-    IMessage m = new SimpleMessage();
+    IMessage m = new FloatMessage( map(getX(),0,app_width,0,1), map(getY(),0,app_height,0,1), lastGlyphX, lastGlyphY, 0, 0 );
+    innerObservingBus.put(getChannel(),m);
+    if (inFront) {
+      m = new BangMessage();
+      innerObservingBus.put(getChannel(),m);
+    }
   }
   void setBus(IBus bus) { innerObservingBus = bus; }
   IBus getBus() { return innerObservingBus; }
@@ -180,7 +186,7 @@ class Zewp extends BaseActor implements IMover, IObservable {
 
 class ZewpWorld extends BaseControlAutomaton implements IAutomatonToy, IBlockWorld {
 
-  ArrayList<Zewp> zewps;
+  ArrayList<IMover> zewps;
   BaseBlockWorld blocks;
 
   Random rnd;  
@@ -202,7 +208,7 @@ class ZewpWorld extends BaseControlAutomaton implements IAutomatonToy, IBlockWor
     blocks = new BaseBlockWorld();    
     for (IActor b : bs) { blocks.addBlock(b); }
 
-    zewps = new ArrayList<Zewp>();
+    zewps = new ArrayList<IMover>();
     for (Zewp z : zs) { zewps.add(z); }
   }
 
@@ -214,8 +220,8 @@ class ZewpWorld extends BaseControlAutomaton implements IAutomatonToy, IBlockWor
   };
 
   void nextStep() {
-    for (Zewp z : zewps) { 
-      z.interact(blocks.itBlocks(),new IteratorCollection<Zewp>(zewps.iterator()));
+    for (IMover z : zewps) { 
+      z.interact(blocks.itBlocks(),new IteratorCollection<IMover>(zewps.iterator()));
     }  
   }
 
@@ -240,7 +246,7 @@ class ZewpWorld extends BaseControlAutomaton implements IAutomatonToy, IBlockWor
   void addBlock(IActor block) { blocks.addBlock(block); }
  
   void postToBus() {
-    for (IObservable z : zewps) { z.postToBus(); }     
+    for (IMover z : zewps) { ((IObservable)z).postToBus(); }     
   } 
   void setBus(IBus bus) { innerObservingBus = bus; }
   IBus getBus() { return innerObservingBus; }
