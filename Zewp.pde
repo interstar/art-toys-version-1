@@ -4,7 +4,7 @@ interface IMover extends IActor {
   int getId();
 }
 
-class Zewp extends MusicActor implements IMover, IMusicToy {
+class Zewp extends BaseActor implements IMover, IObservable {
     float a, da, dx, dy, len, vel, cos_a, sin_a;
     int colour;
     boolean alive;
@@ -12,12 +12,14 @@ class Zewp extends MusicActor implements IMover, IMusicToy {
     int app_width, app_height;
     int newNote;
     
+    IBus innerObservingBus;
+    int channel;
     
-    Zewp(int id, float x, float y, float a, float len, float vel, int colour, int app_width, int app_height, IMusicToy aMusicToy) {
-      setup(id,x,y,a,len,vel,colour,app_width,app_height,aMusicToy);
+    Zewp(int id, float x, float y, float a, float len, float vel, int colour, int app_width, int app_height, IBus aBus) {
+      setup(id,x,y,a,len,vel,colour,app_width,app_height,aBus);
     }
 
-    void setup(int id, float x, float y, float a, float len, float vel, int colour, int app_width, int app_height, IMusicToy aMusicToy) { 
+    void setup(int id, float x, float y, float a, float len, float vel, int colour, int app_width, int app_height, IBus aBus) { 
       this.id = id; 
       this.x = x;
       this.y = y;      
@@ -29,7 +31,7 @@ class Zewp extends MusicActor implements IMover, IMusicToy {
       this.app_height = app_height;
       alive=true;
       newNote=0;
-      innerMusicToy = aMusicToy;
+      setBus(aBus);
       
       
       if (rnd.nextInt(100) < 50) {
@@ -159,6 +161,15 @@ class Zewp extends MusicActor implements IMover, IMusicToy {
      }
      newNote=0;
   }
+
+  void setChannel(int c) { channel = c; }
+  int  getChannel() { return channel; }
+  void postToBus() {
+   //TODO something 
+  }
+  void setBus(IBus bus) { innerObservingBus = bus; }
+  IBus getBus() { return innerObservingBus; }
+  String diagnostic() { return "A Zewp! at " + getX() + ", " + getY(); }
   
 }
 
@@ -196,6 +207,7 @@ class Zewp2 extends Zewp {
       }
       return false;
   }
+
 
 }
 

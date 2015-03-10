@@ -18,6 +18,7 @@ class Chime extends BaseActor implements IActor, IObservable {
   }
     
   void setChannel(int c) { channel = c; }
+  int  getChannel() { return channel; }
   
   void postToBus() {
     IMessage m = new SimpleMessage();
@@ -120,7 +121,9 @@ class CamHarp implements IAutomatonToy, ICamouseUser, IBlockWorld {
       }
     }
  
-  void setChannel(int c) { }   
+  void setChannel(int c) { }
+  int  getChannel() { return 0; }
+  
   void setBus(IBus bus) { innerObservingBus = bus; }
   void postToBus() { }
   String diagnostic() { return "A CamHarp"; }

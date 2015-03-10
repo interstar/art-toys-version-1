@@ -61,6 +61,7 @@ abstract class AbstractBaseBlockWorld extends BaseControlAutomaton implements IB
   void setBus(IBus bus) { innerObservingBus = bus; }
   IBus getBus() { return innerObservingBus; }
   void setChannel(int c)  {}
+  int  getChannel() { return 0; }
     
 }
 

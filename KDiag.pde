@@ -12,10 +12,12 @@ class Arc {
 
 class EndOfSequenceException extends Exception {}
 
-class Node extends MusicActor implements IActor, IMusicToy {  
+class Node extends BaseActor implements IActor, IObservable {  
   ArrayList<Arc> nexts;
   double a, rad;
-  int currentWait;
+  int currentWait, channel;
+  
+  IBus innerObservingBus;
   
   Node(double a, double rad) {
     makeUid();    
@@ -102,6 +104,15 @@ class Node extends MusicActor implements IActor, IMusicToy {
   }  
 
   float getFreq() { return map(getY(),-320,320,1000,0); }
+
+  void setChannel(int c) { channel = c; }
+  int  getChannel() { return channel; }
+  void postToBus() { // fill me 
+  }
+  void setBus(IBus bus) { innerObservingBus = bus; }
+  IBus getBus() { return innerObservingBus; }
+  String diagnostic() { return "A Node at " + getX() + ", " + getY(); }  
+  
   
 } 
 
@@ -185,23 +196,24 @@ interface IHasNetwork {
   int selected(int x, int y, int xOffset, int yOffset);
 }
 
-class KDiag extends BaseControlAutomaton implements IAutomatonToy, IMusicToy, ICamouseUser, IHasNetwork, IBlockWorld {    
+class KDiag extends BaseControlAutomaton implements IAutomatonToy, ICamouseUser, IHasNetwork, IBlockWorld {    
   Network network;
 
   int currentNode; 
   int wait = 20;
 
+  IBus innerObservingBus;
+  int channel;
+  
   Camouse camouse;
   PApplet pa;
-
-  IObservingInstrument mainObservingInstrument;
   
-  KDiag(PApplet pa, int aRad, int noNodes, int arcsPerNode, IObservingInstrument oi) {
+  KDiag(PApplet pa, int aRad, int noNodes, int arcsPerNode, IBus bus) {
     this.pa = pa;
     sizeInSetup();
     camouse = new Camouse(pa); 
     recreateNetwork(aRad,noNodes,arcsPerNode);
-    addObservingInstrument(oi);
+    setBus(bus);
   }
   
   Network getNetwork() { return network; }
@@ -214,48 +226,11 @@ class KDiag extends BaseControlAutomaton implements IAutomatonToy, IMusicToy, IC
 
   void recreateNetwork(int aRad, int noNodes, int arcsPerNode) { 
     network = new Network(aRad,noNodes,arcsPerNode);
-    currentNode = 0;     
-    addObservingInstrument(mainObservingInstrument);
+    currentNode = 0;         
   }
-
  
-  void addObservingInstrument(IObservingInstrument oi) {
-     mainObservingInstrument = oi;
-     for (IActor an : network.itBlocks()) {
-        Node n = (Node)an;   
-        n.addObservingInstrument(oi);
-     } 
-  }
-
   Node getCurrentNode() { return network.getNode(currentNode); }
   
-  void playNote(float f) {
-    getCurrentNode().playNote(f);
-  }
-
-  Iterable<IObservingInstrument> obIns() { 
-    if (network._blocks.size() == 0) { return new ArrayList<IObservingInstrument>(); }
-    return getCurrentNode().obIns();     
-  }
-  
-  void setFreqStrategy(IFreqStrategy fs) { 
-     for (IActor an : network.itBlocks()) {
-        Node n = (Node)an;   
-        n.setFreqStrategy(fs);
-     }
-  }
-  
-  IFreqStrategy getFreqStrategy() {
-    if (network._blocks.size() == 0) { return new IdentityFreqStrategy(); }
-    return getCurrentNode().getFreqStrategy();     
-  }
-  
-  float makeNote(float y) { return getCurrentNode().makeNote(y); }
-
-  void playCurrentNote() {
-    float f = makeNote(getCurrentNode().getY());
-    playNote(f);
-  }
   
   void nextStep() {
     camouseStep();
@@ -264,7 +239,7 @@ class KDiag extends BaseControlAutomaton implements IAutomatonToy, IMusicToy, IC
       try {
         currentNode = network.nextFrom(currentNode);
         wait = network.currentWait*5;
-        playCurrentNote();
+        playEvent(getCurrentNode());
       } catch (EndOfSequenceException e) {
         println("End of sequence from " + currentNode);
         currentNode = 0;
@@ -274,7 +249,16 @@ class KDiag extends BaseControlAutomaton implements IAutomatonToy, IMusicToy, IC
     }    
   }
   
-  void draw() {
+  void playEvent(Node n) {
+    IMessage m = new SimpleMessage();
+    m.fSet( map(n.getX(),0,height,0,1), map(n.getY(),0,width,0,1), 0, 0, 0, 0);
+    innerObservingBus.put(getChannel(),m);
+    m = new SimpleMessage();
+    m.bang();
+    innerObservingBus.put(getChannel(),m);
+  }
+  
+  void draw() {    
     drawVideo();
     network.draw();
     Node cNode = (Node)(network._blocks.get(currentNode));
@@ -290,7 +274,7 @@ class KDiag extends BaseControlAutomaton implements IAutomatonToy, IMusicToy, IC
     
     if (find > -1) { 
       start();
-      playCurrentNote();  
+      playEvent(network.getNode(find));
     }  
   }
 
@@ -316,10 +300,8 @@ class KDiag extends BaseControlAutomaton implements IAutomatonToy, IMusicToy, IC
   }
 
   void reset() {
-    recreateNetwork(240, 15 ,6);
-    setFreqStrategy(new UncertainY(height,100));       
+    recreateNetwork(240, 15 ,6);       
   }
-
 
   void camouseStep() {
       struck(camouse.x(),camouse.y());      
@@ -333,15 +315,22 @@ class KDiag extends BaseControlAutomaton implements IAutomatonToy, IMusicToy, IC
 
   PApplet getApp() { return pa; }
   
-    boolean blockSelected() { return network.blockSelected(); }
-    void mousePressed() { network.mousePressed(); }
-    void mouseReleased() { network.mouseReleased(); }  
-    void mouseDragged() { network.mouseDragged(); }
-    IActor selectedBlock() throws NoSelectedBlockException { return network.selectedBlock(); }
-    
-    void addBlock(IActor b) {network.addBlock(b); }
-    Iterable<IActor> itBlocks() { return network.itBlocks(); }
-    
+  boolean blockSelected() { return network.blockSelected(); }
+  void mousePressed() { network.mousePressed(); }
+  void mouseReleased() { network.mouseReleased(); }  
+  void mouseDragged() { network.mouseDragged(); }
+  IActor selectedBlock() throws NoSelectedBlockException { return network.selectedBlock(); }
+  
+  void addBlock(IActor b) {network.addBlock(b); }
+  Iterable<IActor> itBlocks() { return network.itBlocks(); }
+
+  void postToBus() { 
+// TODO ... fill me
+  }
+  void setChannel(int c) { channel = c; }
+  int  getChannel() { return channel; }
+
+  String diagnostic() { return "KDiag"; }  
 }
  
   

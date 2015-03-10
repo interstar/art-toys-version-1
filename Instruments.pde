@@ -4,7 +4,7 @@ import netP5.*;
 OscP5 oscP5 = new OscP5(this,9001); // one, instantiated once 
 
 
-interface IObservingOSCInstrument extends IOBservingController {
+interface IObservingOSCInstrument extends IObservingController, IMusicObserver {
   void setIP(String ip, int port);
   void setPath(String path);
   OscP5 getOscP5();
@@ -38,7 +38,9 @@ class OscMessageFactory {
 abstract class BaseOSCInstrument implements IObservingOSCInstrument {
   NetAddress myRemoteLocation;
   String path;
-
+  IBus innerBus;
+  IFreqStrategy fs;
+ 
   void setIP(String s, int port) {
     myRemoteLocation = new NetAddress(s,port);
   }
@@ -47,17 +49,36 @@ abstract class BaseOSCInstrument implements IObservingOSCInstrument {
 
   NetAddress getRemoteLocation() { return myRemoteLocation; }
   OscP5 getOscP5() { return oscP5; }
-  
+
+  void setBus(IBus bus) { innerBus = bus; }
+  IBus getBus() { return innerBus; }
+
+  IFreqStrategy getFreqStrategy() { return fs; }
+  void setFreqStrategy(IFreqStrategy ifs) { fs = ifs; }
+
 }
 
 
-class OSCObservingInstrument extends BaseOSCInstrument implements IObservingInstrument, IObservingOSCInstrument {
+class OSCObservingInstrument extends BaseOSCInstrument implements IObservingOSCInstrument {
+  
+  int defaultChannel;
+  
   
   OSCObservingInstrument(String ip, int port, String path) {
     setIP(ip,port);
     setPath(path);
   } 
+  
+  
+  void setDefaultChannel(int c) { defaultChannel = c; }
 
+  void postToBus() { }
+  void scanBus() {
+   // FILL ME 
+  }
+  
+  float makeNote(float y) { return fs.corrected(fs.rawFreq(y)); }
+  
   void changed(String... params) {
      oscP5.send( (new OscMessageFactory(path)).make(params), myRemoteLocation); 
   }
@@ -72,7 +93,7 @@ class OSCObservingInstrument extends BaseOSCInstrument implements IObservingInst
   }
  
   String diagnostic() {
-    return "" + getRemoteLocation() + " // " + path;
+    return "OSCObservingInstrument : " + getRemoteLocation() + " // " + path;
   }
  
   

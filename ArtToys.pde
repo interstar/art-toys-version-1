@@ -29,6 +29,10 @@ abstract class BaseControlAutomaton implements IAutomatonToy {
   boolean playing = false;
   void start() { playing = true; }
   void stop() { playing = false; }
-  boolean isPlaying() { return playing; } 
+  boolean isPlaying() { return playing; }
+ 
+  IBus innerObservingBus;
+  void setBus(IBus bus) { innerObservingBus = bus; }
+  IBus getBus() { return innerObservingBus; }
 }
 

@@ -18,7 +18,7 @@ Capture globalVideo(PApplet applet) {
     return video;  
 }
 
-class Camouse {
+class Camouse implements IObservable {
 
   int numPixels;
   int[] previousFrame;
@@ -29,6 +29,9 @@ class Camouse {
 
   Capture video;
   PImage v2;
+
+  IBus innerObservingBus;
+  int channel;  
 
   Camouse(PApplet applet) {
     video = globalVideo(applet);
@@ -121,6 +124,18 @@ class Camouse {
   PImage getVideo() { 
     return v2;
   }
+  
+  IBus getBus() { return innerObservingBus; }
+  void setBus(IBus bus) { innerObservingBus = bus; }
+  void postToBus() { 
+    IMessage m = new SimpleMessage();
+    m.fSet( map(x(),0,width,0,1), map(y(),0,height,0,1), 0, 0, 0, 0);
+    innerObservingBus.put(channel, m);      
+  }
+  void setChannel(int c) { channel = c; }
+  int  getChannel() { return channel; }
+  String diagnostic() { return "Camouse"; }
 }
+
 
 
