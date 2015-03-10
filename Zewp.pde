@@ -1,5 +1,4 @@
 interface IMover extends IActor {
-  void sendOSCMessage();
   void interact(Iterable<IActor> blocks, Iterable<IMover> movers);
   int getId();
 }
@@ -14,6 +13,9 @@ class Zewp extends BaseActor implements IMover, IObservable {
     
     IBus innerObservingBus;
     int channel;
+
+    public float lastGlyphX, lastGlyphY;
+    boolean inFront = false;
     
     Zewp(int id, float x, float y, float a, float len, float vel, int colour, int app_width, int app_height, IBus aBus) {
       setup(id,x,y,a,len,vel,colour,app_width,app_height,aBus);
@@ -88,9 +90,13 @@ class Zewp extends BaseActor implements IMover, IObservable {
         for (IMover z : zewps) {        
             if (z.getId() == id) { continue; /* don't test for self */ }
             if (z.hit((int)px,(int)py)) {
+                lastGlyphX = ((Zewp)z).lastGlyphX;
+                lastGlyphY = ((Zewp)z).lastGlyphY;
+                inFront = true;
                 return true;
             }
         }
+        inFront = false;
         return false;
     }
 
@@ -98,9 +104,13 @@ class Zewp extends BaseActor implements IMover, IObservable {
     boolean glyph_in_front(int x, int y, Iterable<IActor> glyphs) {
         for (IActor g : glyphs) {
             if (g.hit((int)x,(int)y)) {
+                lastGlyphX = g.getX();
+                lastGlyphY = g.getY();
+                inFront = true;                
                 return true;
             }
         }
+        inFront = false;
         return false;
     }
 
@@ -137,7 +147,6 @@ class Zewp extends BaseActor implements IMover, IObservable {
       if ((x < 0) || (x > app_width)) { x = app_width/2; }
       if ((y < 0) || (y > app_height)) { y = app_height/2; }
 
-      sendOSCMessage();    
   }      
   
   void draw() {
@@ -155,60 +164,16 @@ class Zewp extends BaseActor implements IMover, IObservable {
    
   float getFreq() { return height-(int)y; } 
   
-  void sendOSCMessage() {
-     for (IObservingInstrument oi : obIns()) {  
-        oi.changed(newNote,getFreq(),getX(),getFreq());
-     }
-     newNote=0;
-  }
 
   void setChannel(int c) { channel = c; }
   int  getChannel() { return channel; }
   void postToBus() {
-   //TODO something 
+    IMessage m = new SimpleMessage();
   }
   void setBus(IBus bus) { innerObservingBus = bus; }
   IBus getBus() { return innerObservingBus; }
-  String diagnostic() { return "A Zewp! at " + getX() + ", " + getY(); }
+  String diagnostic() { return "A Zewp! at " + getX() + ", " + getY() + "lastGlyphs:" + lastGlyphX + "," lastGlyphY; }
   
-}
-
-class Zewp2 extends Zewp {
-  float freq;
-  boolean n;
-
-  Zewp2(int id, float x, float y, float a, float len, float vel, int colour, int app_width, int app_height, IMusicToy aMusicToy) {
-    super(id,x,y,a,len,vel,colour,app_width,app_height, aMusicToy);
-  }
-  
-  float getFreq() { return freq; }
-
-
-  boolean glyph_in_front(int x, int y, Iterable<IActor> glyphs) {
-        for (IActor g : glyphs) {
-            if (g.hit((int)x,(int)y)) {
-                freq = g.getFreq();
-                newNote=1;
-                return true;
-            }
-        }
-        return false;
-  }
-
-
-  boolean zewp_in_front(int px, int py, Iterable<IMover> zewps) {      
-      for (IMover z : zewps) { 
-          if (z.getId() == id) { continue; /* don't test for self */ }
-          if (z.hit((int)px,(int)py)) {
-                freq = z.getFreq();
-                newNote=1;            
-              return true;
-          }
-      }
-      return false;
-  }
-
-
 }
 
 
