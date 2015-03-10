@@ -179,13 +179,13 @@ class Network extends BaseBlockWorld implements IBlockWorld {
   
 }
 
-interface HasNetwork {
+interface IHasNetwork {
   void recreateNetwork(int aRad, int noNodes, int arcsPerNode);
   Network getNetwork();
   int selected(int x, int y, int xOffset, int yOffset);
 }
 
-class KDiag extends BaseControlAutomaton implements IAutomatonToy, IMusicToy, ICamouseUser, HasNetwork, IBlockWorld {    
+class KDiag extends BaseControlAutomaton implements IAutomatonToy, IMusicToy, ICamouseUser, IHasNetwork, IBlockWorld {    
   Network network;
 
   int currentNode; 
