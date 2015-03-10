@@ -1,4 +1,4 @@
-interface UIListener {
+interface IUIListener {
   void struck(int x, int y);
   void keyPressed(int k);
 
@@ -8,7 +8,7 @@ interface UIListener {
   
 }
 
-interface IArtToy extends UIListener {
+interface IArtToy extends IUIListener {
   void reset();
   void sizeInSetup();
   
