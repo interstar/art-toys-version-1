@@ -83,8 +83,6 @@ class BaseBlockWorld extends AbstractBaseBlockWorld {
 }
 
 
-interface IBlockWorldAutomaton extends IBlockWorld, IAutomatonToy { }
-
 interface IBlockWorldFactory {
   IBlockWorld makeWorld();
 }

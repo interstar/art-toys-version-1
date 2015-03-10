@@ -17,12 +17,13 @@ class Zewp extends BaseActor implements IMover, IObservable {
     public float lastGlyphX, lastGlyphY;
     boolean inFront = false;
     
-    Zewp(int id, float x, float y, float a, float len, float vel, int colour, int app_width, int app_height, IBus aBus) {
-      setup(id,x,y,a,len,vel,colour,app_width,app_height,aBus);
+    Zewp(int id, int chan, float x, float y, float a, float len, float vel, int colour, int app_width, int app_height, IBus aBus) {
+      setup(id,chan,x,y,a,len,vel,colour,app_width,app_height,aBus);
     }
 
-    void setup(int id, float x, float y, float a, float len, float vel, int colour, int app_width, int app_height, IBus aBus) { 
-      this.id = id; 
+    void setup(int id, int chan, float x, float y, float a, float len, float vel, int colour, int app_width, int app_height, IBus aBus) { 
+      this.id = id;
+      setChannel(chan);
       this.x = x;
       this.y = y;      
       this.len = len;
@@ -172,55 +173,15 @@ class Zewp extends BaseActor implements IMover, IObservable {
   }
   void setBus(IBus bus) { innerObservingBus = bus; }
   IBus getBus() { return innerObservingBus; }
-  String diagnostic() { return "A Zewp! at " + getX() + ", " + getY() + "lastGlyphs:" + lastGlyphX + "," lastGlyphY; }
+  String diagnostic() { return "A Zewp! at " + getX() + ", " + getY() + "lastGlyphs:" + lastGlyphX + "," + lastGlyphY; }
   
 }
 
-
-class ZewpFactory implements IBlockWorldFactory {
-  int noBlocks, noZewps;
-  String backImg;
-
-
-  ZewpFactory(String imgName, int noblocks, int nozewps) {
-    noBlocks = noblocks;
-    noZewps = nozewps;
-    backImg = imgName;
-  }
-  
-  IBlockWorld makeWorld() {
-    ArrayList<IActor> blocks = new ArrayList<IActor>();
-    ArrayList<Zewp> zewps = new ArrayList<Zewp>();
-
-    PImage im = loadImage(backImg);
-    
-    int n;  
-    String name;
-    NoteCalculator nc = new NoteCalculator();
-    IFreqStrategy fs = new ScaleBasedFreqStrategy(nc,im.height);
-    
-    for (int i=0;i<12;i++) {
-       MusicActor b = new FlowerBlock(rnd.nextInt(im.width),rnd.nextInt(im.height-20));
-       b.setFreqStrategy(fs); 
-       blocks.add(b);
-    }
-    
-    for (int i=0;i<6;i++) {
-      IMusicToy mt = new BaseMusicToy();
-      mt.addObservingInstrument(new OSCObservingInstrument("127.0.0.1", 9004, "/channel"+i));
-      mt.setFreqStrategy(fs);
-      Zewp z = new Zewp2(i, rnd.nextInt(im.width),rnd.nextInt(im.height-20), 0, 10, 2, color(255,255,200), im.width, im.height,mt);
-      zewps.add(z);
-    }
-    
-    return new ZewpWorld(backImg,blocks,zewps,fs);
-  }
-}
 
 class ZewpWorld extends BaseControlAutomaton implements IAutomatonToy, IBlockWorld {
 
-  ArrayList<IMover> zewps;
-  BaseBlockWorld blocks = new BaseBlockWorld();
+  ArrayList<Zewp> zewps;
+  BaseBlockWorld blocks;
 
   Random rnd;  
   
@@ -228,20 +189,21 @@ class ZewpWorld extends BaseControlAutomaton implements IAutomatonToy, IBlockWor
   int wide=100;
   int high=100;
   
-  IMusicToy innerMusicToy = new BaseMusicToy();  
-
-  ZewpWorld(String backImgName, ArrayList<IActor> bs, ArrayList<Zewp> zs, IFreqStrategy fs) {
+  IBus innerObservingBus;
+  int channel;
+  
+  ZewpWorld(String backImgName, ArrayList<IActor> bs, ArrayList<Zewp> zs, IBus bus) {
     backImg = loadImage(backImgName);
-
     wide=backImg.width;
     high=backImg.height;  
 
-    zewps = new ArrayList<IMover>();
+    setBus(bus);
+
+    blocks = new BaseBlockWorld();    
     for (IActor b : bs) { blocks.addBlock(b); }
-    for (IMover z : zs) { zewps.add(z); }
-    
-    innerMusicToy.setFreqStrategy(fs);
-    
+
+    zewps = new ArrayList<Zewp>();
+    for (Zewp z : zs) { zewps.add(z); }
   }
 
   void sizeInSetup() { size(wide,high); }
@@ -252,8 +214,8 @@ class ZewpWorld extends BaseControlAutomaton implements IAutomatonToy, IBlockWor
   };
 
   void nextStep() {
-    for (IMover z : zewps) { 
-      z.interact(blocks.itBlocks(),new IteratorCollection<IMover>(zewps.iterator()));
+    for (Zewp z : zewps) { 
+      z.interact(blocks.itBlocks(),new IteratorCollection<Zewp>(zewps.iterator()));
     }  
   }
 
@@ -266,13 +228,7 @@ class ZewpWorld extends BaseControlAutomaton implements IAutomatonToy, IBlockWor
     }  
   }
 
-  void setScale(String scale) {
-    innerMusicToy.getFreqStrategy().controlChange("scale",scale);
-  }
-
-  void keyPressed(int k) {
-    innerMusicToy.getFreqStrategy().controlChange("scale",k);
-  }
+  void keyPressed(int k) {  }
 
   boolean blockSelected() { return blocks.blockSelected(); }
   void mousePressed() { blocks.mousePressed(); }
@@ -280,6 +236,16 @@ class ZewpWorld extends BaseControlAutomaton implements IAutomatonToy, IBlockWor
   void mouseDragged() { blocks.mouseDragged(); }
   IActor selectedBlock() throws NoSelectedBlockException { return blocks.selectedBlock(); }
   Iterable<IActor> itBlocks() { return blocks.itBlocks(); }
-  void addBlock(IActor block) { blocks.addBlock(block); } 
+
+  void addBlock(IActor block) { blocks.addBlock(block); }
+ 
+  void postToBus() {
+    for (IObservable z : zewps) { z.postToBus(); }     
+  } 
+  void setBus(IBus bus) { innerObservingBus = bus; }
+  IBus getBus() { return innerObservingBus; }
+  void setChannel(int c) { channel = c; }
+  int  getChannel() { return channel; }
+  String diagnostic() { return "Zewp! World with " + zewps.size() + " Zewp!s"; } 
 }
 

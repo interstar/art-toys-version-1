@@ -3,15 +3,39 @@ import java.util.Random;
 IAutomatonToy toy;
 
 Random rnd = new Random();;
+IBus mainBus = new BasicBus();
+
 
 CamHarp makeCamHarp() {
   CamHarp h = new CamHarp(this);
   return h;
 }
 
+ZewpWorld makeZewpWorld() {
+  String imgName = "bg.png";
+  
+  PImage im = loadImage(imgName);
+  
+  ArrayList<IActor> blocks = new ArrayList<IActor>();
+  ArrayList<Zewp> zewps = new ArrayList<Zewp>();
+  
+  for (int i=0;i<12;i++) {
+     IActor b = new FlowerBlock(rnd.nextInt(im.width),rnd.nextInt(im.height-20));
+     blocks.add(b);
+  }
+  
+  for (int i=0;i<6;i++) {
+    Zewp z = new Zewp(i, i, rnd.nextInt(im.width),rnd.nextInt(im.height-20), 0, 10, 2, color(255,255,200), im.width, im.height, mainBus );
+    zewps.add(z);
+  }
+  
+  return new ZewpWorld(imgName,blocks,zewps,mainBus); 
+}
+
 void reset() {
+  mainBus.reset();
   //toy = new KDiag(this,240,15,6,  new OSCObservingInstrument("192.168.0.131", 5001, "/a"));
-  toy = (new ZewpFactory("bg.png",12,10)).makeWorld();
+  toy = makeZewpWorld();
   //toy = makeCamHarp();
   toy.reset();
   toy.sizeInSetup();  
@@ -24,9 +48,11 @@ void setup() {
  
 
 void draw() {
-
+  mainBus.reset();
   toy.nextStep();  
   toy.draw();
+  println(mainBus.diagnostic());
+  
 }
 
 void mouseClicked() { toy.struck(mouseX,mouseY); }
