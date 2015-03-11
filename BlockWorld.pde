@@ -31,7 +31,6 @@ abstract class AbstractBaseBlockWorld extends BaseControlAutomaton implements IB
   void mousePressed() {
     for (IActor b : itBlocks()) {
       if (b.hit(mouseX,mouseY)) {
-        println("Hit " + b);
         _blockSelected=true;
         _selectedBlock=b;
         break;

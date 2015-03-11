@@ -6,9 +6,13 @@ interface IMessage {
   boolean isStrings();
 }
 
-interface IFloatMessage extends IMessage { float[] getFloats(); }
+interface IFloatMessage extends IMessage { 
+  float[] getFloats(); 
+}
 interface IBangMessage extends IMessage {}
-interface IStringMessage extends IMessage { String [] getStrings(); }
+interface IStringMessage extends IMessage { 
+  String [] getStrings(); 
+}
 
 class FloatMessage implements IMessage, IFloatMessage {
   float[] floats;

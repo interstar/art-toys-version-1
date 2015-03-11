@@ -3,8 +3,7 @@ import java.util.*;
 interface IMusicObserver extends IObservingController {
    void setFreqStrategy(IFreqStrategy fs);
    IFreqStrategy getFreqStrategy();
-   float makeNote(float y);
-   void playNote(float freq);
+   float makeCorrectedFreq(float y); // From a y normalized between 0 and 1
 }
 
 class BaseMusicObserver implements IMusicObserver {
@@ -18,7 +17,7 @@ class BaseMusicObserver implements IMusicObserver {
   void postToBus() { }
   void scanBus() {}
     
-  float makeNote(float y) { return freqStrat.corrected(freqStrat.rawFreq(y)); }
+  float makeCorrectedFreq(float y) { return freqStrat.corrected(freqStrat.rawFreq(y)); }
   
   void playNote(float freq) {
     // TODO something
@@ -134,14 +133,14 @@ class NoteCalculator {
     current = scales.get(k);
   }
 
-  double valToMidi(int val, float max) {
-    double note = map(val,0,max,midiMin,midiMax);
+  double valToMidi(float val) {
+    double note = map(val,0,1,midiMin,midiMax);
     int m = current.transform((int)note);
     return m;
   }
 
-  double valToFreq(int v, float max) {
-    return midiToFreq(valToMidi(v,max)); 
+  double valToFreq(float v) {
+    return midiToFreq(valToMidi(v)); 
   }  
 
   void keyPressedUpdate(int k) {
@@ -174,14 +173,12 @@ class NoteCalculator {
 
 class ScaleBasedFreqStrategy implements IFreqStrategy {
   NoteCalculator nc;
-  float range;
-  ScaleBasedFreqStrategy(NoteCalculator nc, float r) {
-    range = r; 
+  ScaleBasedFreqStrategy(NoteCalculator nc) {
     this.nc = nc; 
   }
   
   float rawFreq(float y) { 
-    return (float)nc.valToFreq((int)y,range);
+    return (float)nc.valToFreq(y);
   }
   
   float corrected(float f) { return f; }

@@ -88,15 +88,15 @@ interface FilterTest<E> {
 
 public class FilteredIterator<E> implements Iterator<E> {
   // I Hate Java and the lack of anything useful like lazy lists / generators / yield etc.
-  ArrayList<E> innerList = new ArrayList<E>();
-  Iterator<E> innerIt;
+  ArrayList<E> inner = new ArrayList<E>();
+  Iterator<E> it;
   
   public FilteredIterator(IteratorCollection<E> stream, FilterTest<E> test) {
     for (E e : stream) { if (test.matches(e)) { inner.add(e); } }
-    innerIt = innerList.iterator();    
+    it = inner.iterator();    
   }
   
-  boolean hasNext() { return innerIt.hasNext();  }
-  E next() { return innerIt.next(); }
+  boolean hasNext() { return it.hasNext();  }
+  E next() { return it.next(); }
   void remove() { }   
 }

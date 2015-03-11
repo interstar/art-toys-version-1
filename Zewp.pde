@@ -170,7 +170,7 @@ class Zewp extends BaseActor implements IMover, IObservable {
   int  getChannel() { return channel; }
   
   void postToBus() {
-    IMessage m = new FloatMessage( map(getX(),0,app_width,0,1), map(getY(),0,app_height,0,1), lastGlyphX, lastGlyphY, 0, 0 );
+    IMessage m = new FloatMessage( map(getX(),0,app_width,0,1), map(getY(),0,app_height,0,1), map(lastGlyphX,0,app_width,0,1), map(lastGlyphY,0,app_height,0,1), 0, 0 );    
     innerObservingBus.put(getChannel(),m);
     if (inFront) {
       m = new BangMessage();

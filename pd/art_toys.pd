@@ -22,7 +22,7 @@
 #X obj 616 495 at_synth;
 #X obj 10 705 +~ 0;
 #X obj 143 33 hsl 120 20 0 1 0 0 empty empty vol_1 -2 -8 0 10 -262144
--1 -1 3500 1;
+-1 -1 5600 1;
 #X floatatom 10 755 5 0 0 0 - - -;
 #X obj 10 805 *~;
 #X obj 10 855 dac~;

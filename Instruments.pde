@@ -59,42 +59,34 @@ abstract class BaseOSCInstrument implements IObservingOSCInstrument {
 }
 
 
-class OSCObservingInstrument extends BaseOSCInstrument implements IObservingOSCInstrument {
+class ObInZewp2ArtToysDefault extends BaseOSCInstrument implements IObservingOSCInstrument  {
+    int channel;
   
-  int defaultChannel;
-  
-  
-  OSCObservingInstrument(String ip, int port, String path) {
-    setIP(ip,port);
-    setPath(path);
-  } 
-  
-  
-  void setDefaultChannel(int c) { defaultChannel = c; }
+    ObInZewp2ArtToysDefault(String ip, int port, String path, int chan, IFreqStrategy fs, IBus bus) {
+      setIP(ip,port);
+      setPath(path);  
+      this.fs = fs;      
+      channel = chan;
+      setBus(bus);
+    }
+    
+    void postToBus() { }
+    void scanBus() {
+      int bang = 0;
+      
+      for (IMessage m : innerBus.getBangs(channel)) { bang=1; }
+      
+      for (IMessage m : innerBus.getFloats(channel)) {
+        float[] xs = ((IFloatMessage)m).getFloats();
 
-  void postToBus() { }
-  void scanBus() {
-   // FILL ME 
-  }
-  
-  float makeNote(float y) { return fs.corrected(fs.rawFreq(y)); }
-  
-  void changed(String... params) {
-     oscP5.send( (new OscMessageFactory(path)).make(params), myRemoteLocation); 
-  }
-  
-  void changed(float... params)  { 
-     oscP5.send( (new OscMessageFactory(path)).make(params), myRemoteLocation); 
-  }
-  
-  void playNote(float freq) {
-    //changed(1,freq,50000,freq);
-    changed((int)map(freq,0,1000,1,127),80,2,3); 
-  }
- 
-  String diagnostic() {
-    return "OSCObservingInstrument : " + getRemoteLocation() + " // " + path;
-  }
- 
-  
-}
+        OscMessage om = (new OscMessageFactory(path)).make(bang, makeCorrectedFreq(xs[1]),
+                                                                 map(xs[0],0,1,0,1000),
+                                                                 xs[2],xs[3],xs[4]);
+        oscP5.send(om , myRemoteLocation);
+      }      
+    }
+    
+    float makeCorrectedFreq(float y) { return fs.corrected(fs.rawFreq(y)); }
+   
+     
+}  
