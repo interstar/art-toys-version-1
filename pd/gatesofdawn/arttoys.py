@@ -59,12 +59,12 @@ with patch("art_toys.pd") as f :
     oin = osc_in(9004)
     
     
-    dac_( mix(
+    recordable_dac_("test.wav", ( mix(
         make_synth(oin,0,4),
         make_synth(oin,1,4),
         make_synth(oin,2,4),
         make_synth(oin,3,4), 
         make_synth(oin,4,4),
         make_synth(oin,5,4)
-    ) )
+    ) ) )
     
