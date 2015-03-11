@@ -81,3 +81,22 @@ public class IteratorCollection<E> implements Iterable<E> {
     public Iterator<E> iterator() { return it; }
 
 }
+
+interface FilterTest<E> {
+  boolean matches(E item);
+}
+
+public class FilteredIterator<E> implements Iterator<E> {
+  // I Hate Java and the lack of anything useful like lazy lists / generators / yield etc.
+  ArrayList<E> innerList = new ArrayList<E>();
+  Iterator<E> innerIt;
+  
+  public FilteredIterator(IteratorCollection<E> stream, FilterTest<E> test) {
+    for (E e : stream) { if (test.matches(e)) { inner.add(e); } }
+    innerIt = innerList.iterator();    
+  }
+  
+  boolean hasNext() { return innerIt.hasNext();  }
+  E next() { return innerIt.next(); }
+  void remove() { }   
+}
