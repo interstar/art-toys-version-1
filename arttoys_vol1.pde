@@ -8,11 +8,11 @@ ArrayList<IObservingOSCInstrument> instruments = new ArrayList<IObservingOSCInst
 
 CamHarp makeCamHarp() {
   NoteCalculator nc = new NoteCalculator(); 
-  nc.setCurrent("minor");
+  nc.setCurrent("gypsy");
   IFreqStrategy fs = new ScaleBasedFreqStrategy(nc);  
   
   for (int i=0;i<4;i++) {
-    instruments.add( new ObInCamMouse2ArtToys("localhost", 9004, "/channel"+i, i, fs, mainBus ) );    
+    instruments.add( new ObInCamHarp2ArtToys("localhost", 9004, "/channel"+i, i, fs, mainBus ) );    
   }
   
   CamHarp h = new CamHarp(this,mainBus);

@@ -4,7 +4,7 @@ class Chime extends BaseActor implements IActor, IObservable {
   int rad,wide,high,channel;
   IBus innerObservingBus;
   
-  Chime(int r, int x, int y, int w, int h, IBus bus) {
+  Chime(int r, int x, int y, int w, int h, int chan, IBus bus) {
     makeUid();
     rad  = r;
     high = h;
@@ -12,6 +12,7 @@ class Chime extends BaseActor implements IActor, IObservable {
     this.x = x;
     this.y = y;    
     setBus(bus);
+    setChannel(chan);
   }
   
   boolean hit(int ox, int oy) {
@@ -63,7 +64,7 @@ class CamHarp implements IAutomatonToy, ICamouseUser, IBlockWorld {
       chimes = new BaseBlockWorld();
       for (int r = 0; r<noRows;r++) {
         for (int c = 0; c<rowLength;c++) {
-          addBlock(new Chime(15,(c+1)*50,50+r*rowOffset,640, 480, innerObservingBus));
+          addBlock(new Chime(15,(c+1)*50,50+r*rowOffset,640, 480, r, innerObservingBus));
         }
       }
     }
@@ -129,3 +130,17 @@ class CamHarp implements IAutomatonToy, ICamouseUser, IBlockWorld {
   String diagnostic() { return "A CamHarp"; }
   IBus getBus() { return innerObservingBus; }  
 }
+
+class ObInCamHarp2ArtToys extends BaseObservingOSCInstrument {
+  
+    ObInCamHarp2ArtToys(String ip, int port, String path, int chan, IFreqStrategy fs, IBus bus) {
+      super(ip,port,path,chan,fs,bus);
+    }
+
+    OscMessage makeMessage(int bang, float[] xs) {
+      return mFact.make(bang, makeCorrectedFreq(xs[0]),
+                            map(xs[1],0,1,0,1000),
+                            xs[2],xs[3],xs[4]);
+    }
+}
+

@@ -255,3 +255,17 @@ class ZewpWorld extends BaseControlAutomaton implements IAutomatonToy, IBlockWor
   String diagnostic() { return "Zewp! World with " + zewps.size() + " Zewp!s"; } 
 }
 
+
+class ObInZewp2ArtToys extends BaseObservingOSCInstrument {
+    ObInZewp2ArtToys(String ip, int port, String path, int chan, IFreqStrategy fs, IBus bus) {
+      super(ip,port,path,chan,fs,bus);
+    }
+  
+    OscMessage makeMessage(int bang, float[] xs) {
+      return mFact.make(bang, makeCorrectedFreq(xs[1]),
+                            map(xs[0],0,1,0,1000),
+                            xs[2],xs[3],xs[4]);
+    }
+}
+
+
