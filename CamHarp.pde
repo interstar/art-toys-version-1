@@ -4,13 +4,14 @@ class Chime extends BaseActor implements IActor, IObservable {
   int rad,wide,high,channel;
   IBus innerObservingBus;
   
-  Chime(int r, int x, int y, int w, int h) {
+  Chime(int r, int x, int y, int w, int h, IBus bus) {
     makeUid();
     rad  = r;
     high = h;
     wide = w;
     this.x = x;
     this.y = y;    
+    setBus(bus);
   }
   
   boolean hit(int ox, int oy) {
@@ -48,10 +49,11 @@ class CamHarp implements IAutomatonToy, ICamouseUser, IBlockWorld {
     int rowOffset = 110;
     int rowLength = 12; 
             
-    CamHarp(PApplet pa) {
+    CamHarp(PApplet pa, IBus bus) {
       this.pa = pa;
       sizeInSetup();
       camouse = new Camouse(pa);
+      setBus(bus);
       reset();      
     }
     
@@ -61,7 +63,7 @@ class CamHarp implements IAutomatonToy, ICamouseUser, IBlockWorld {
       chimes = new BaseBlockWorld();
       for (int r = 0; r<noRows;r++) {
         for (int c = 0; c<rowLength;c++) {
-          addBlock(new Chime(15,(c+1)*50,50+r*rowOffset,640, 480));
+          addBlock(new Chime(15,(c+1)*50,50+r*rowOffset,640, 480, innerObservingBus));
         }
       }
     }

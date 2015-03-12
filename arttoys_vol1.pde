@@ -7,7 +7,15 @@ IBus mainBus = new BasicBus();
 ArrayList<IObservingOSCInstrument> instruments = new ArrayList<IObservingOSCInstrument>();
 
 CamHarp makeCamHarp() {
-  CamHarp h = new CamHarp(this);
+  NoteCalculator nc = new NoteCalculator(); 
+  nc.setCurrent("minor");
+  IFreqStrategy fs = new ScaleBasedFreqStrategy(nc);  
+  
+  for (int i=0;i<4;i++) {
+    instruments.add( new ObInCamMouse2ArtToys("localhost", 9004, "/channel"+i, i, fs, mainBus ) );    
+  }
+  
+  CamHarp h = new CamHarp(this,mainBus);
   return h;
 }
 
@@ -31,7 +39,7 @@ ZewpWorld makeZewpWorld() {
   for (int i=0;i<6;i++) {
     Zewp z = new Zewp(i, i, rnd.nextInt(im.width),rnd.nextInt(im.height-20), 0, 10, 2, color(255,255,200), im.width, im.height, mainBus );
     zewps.add(z);
-    instruments.add( new ObInZewp2ArtToysDefault("localhost", 9004, "/channel"+i, i, fs, mainBus ) );
+    instruments.add( new ObInZewp2ArtToys("localhost", 9004, "/channel"+i, i, fs, mainBus ) );
   }
 
   

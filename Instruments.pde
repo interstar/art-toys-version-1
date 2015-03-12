@@ -40,12 +40,16 @@ abstract class BaseOSCInstrument implements IObservingOSCInstrument {
   String path;
   IBus innerBus;
   IFreqStrategy fs;
+  OscMessageFactory mFact;
  
   void setIP(String s, int port) {
     myRemoteLocation = new NetAddress(s,port);
   }
 
-  void setPath(String p) { path=p; }
+  void setPath(String p) { 
+    path=p;
+    mFact = new OscMessageFactory(path); 
+  }
 
   NetAddress getRemoteLocation() { return myRemoteLocation; }
   OscP5 getOscP5() { return oscP5; }
@@ -59,18 +63,21 @@ abstract class BaseOSCInstrument implements IObservingOSCInstrument {
 }
 
 
-class ObInZewp2ArtToysDefault extends BaseOSCInstrument implements IObservingOSCInstrument  {
+abstract class AbstractGenericOscObservingInstrument extends BaseOSCInstrument implements IObservingOSCInstrument  {
     int channel;
   
-    ObInZewp2ArtToysDefault(String ip, int port, String path, int chan, IFreqStrategy fs, IBus bus) {
+    AbstractGenericOscObservingInstrument(String ip, int port, String path, int chan, IFreqStrategy fs, IBus bus) {
       setIP(ip,port);
       setPath(path);  
       this.fs = fs;      
       channel = chan;
+      customizer = cust;
       setBus(bus);
     }
     
     void postToBus() { }
+    
+    
     void scanBus() {
       int bang = 0;
       
@@ -79,14 +86,39 @@ class ObInZewp2ArtToysDefault extends BaseOSCInstrument implements IObservingOSC
       for (IMessage m : innerBus.getFloats(channel)) {
         float[] xs = ((IFloatMessage)m).getFloats();
 
-        OscMessage om = (new OscMessageFactory(path)).make(bang, makeCorrectedFreq(xs[1]),
-                                                                 map(xs[0],0,1,0,1000),
-                                                                 xs[2],xs[3],xs[4]);
+        OscMessage om = makeMessage(bang, xs);                                                                 
         oscP5.send(om , myRemoteLocation);
       }      
     }
+   
+    abstract OscMessage makeMessage(int bang, float[] xs);
     
     float makeCorrectedFreq(float y) { return fs.corrected(fs.rawFreq(y)); }
-   
-     
+        
 }  
+
+class ObInZewp2ArtToys extends AbstractGenericOscObservingInstrument {
+    ObInZewp2ArtToys(String ip, int port, String path, int chan, IFreqStrategy fs, IBus bus) {
+      super(ip,port,path,chan,fs,bus);
+    }
+  
+    OscMessage makeMessage(int bang, float[] xs) {
+      return mFact.make(bang, makeCorrectedFreq(xs[1]),
+                            map(xs[0],0,1,0,1000),
+                            xs[2],xs[3],xs[4]);
+    }
+}
+
+class ObInCamMouse2ArtToys extends AbstractGenericOscObservingInstrument {
+  
+    ObInCamMouse2ArtToys(String ip, int port, String path, int chan, IFreqStrategy fs, IBus bus) {
+      super(ip,port,path,chan,fs,bus);
+    }
+
+    OscMessage makeMessage(int bang, float[] xs) {
+      return mFact.make(bang, makeCorrectedFreq(xs[1]),
+                            map(xs[0],0,1,0,1000),
+                            xs[2],xs[3],xs[4]);
+    }
+}
+
