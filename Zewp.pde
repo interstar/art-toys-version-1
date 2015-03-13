@@ -262,9 +262,9 @@ class ObInZewp2ArtToys extends BaseObservingOSCInstrument {
     }
   
     OscMessage makeMessage(int bang, float[] xs) {
-      return mFact.make(bang, makeCorrectedFreq(xs[1]),
-                            map(xs[0],0,1,0,1000),
-                            xs[2],xs[3],xs[4]);
+      float tone = makeCorrectedFreq(xs[1]);
+      float filter =  map(xs[0],0,1,0,1000);
+      return mFact.make(bang, tone, filter, xs[2],xs[3],xs[4]);
     }
 }
 

@@ -79,7 +79,6 @@ abstract class BaseObservingOSCInstrument implements IObservingOSCInstrument {
    
     for (IMessage m : innerBus.getFloats(channel)) {
       float[] xs = ((IFloatMessage)m).getFloats();
-
       OscMessage om = makeMessage(bang, xs);                                                                 
       oscP5.send(om , myRemoteLocation);
     }      

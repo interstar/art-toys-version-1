@@ -107,8 +107,10 @@ class Node extends BaseActor implements IActor, IObservable {
 
   void setChannel(int c) { channel = c; }
   int  getChannel() { return channel; }
-  void postToBus() { // fill me 
+  void postToBus() { // fill me
+  
   }
+  
   void setBus(IBus bus) { innerObservingBus = bus; }
   IBus getBus() { return innerObservingBus; }
   String diagnostic() { return "A Node at " + getX() + ", " + getY(); }  
@@ -201,19 +203,19 @@ class KDiag extends BaseControlAutomaton implements IAutomatonToy, ICamouseUser,
 
   int currentNode; 
   int wait = 20;
-
-  IBus innerObservingBus;
-  int channel;
   
   Camouse camouse;
   PApplet pa;
   
-  KDiag(PApplet pa, int aRad, int noNodes, int arcsPerNode, IBus bus) {
+  KDiag(PApplet pa, int aRad, int noNodes, int arcsPerNode, int chan, IBus bus) {
     this.pa = pa;
     sizeInSetup();
-    camouse = new Camouse(pa); 
-    recreateNetwork(aRad,noNodes,arcsPerNode);
     setBus(bus);
+    setChannel(chan);
+
+    camouse = new Camouse(pa,bus); 
+    recreateNetwork(aRad,noNodes,arcsPerNode);
+    
   }
   
   Network getNetwork() { return network; }
@@ -241,7 +243,6 @@ class KDiag extends BaseControlAutomaton implements IAutomatonToy, ICamouseUser,
         wait = network.currentWait*5;
         playEvent(getCurrentNode());
       } catch (EndOfSequenceException e) {
-        println("End of sequence from " + currentNode);
         currentNode = 0;
         stop();      
         wait = 20;
@@ -249,8 +250,8 @@ class KDiag extends BaseControlAutomaton implements IAutomatonToy, ICamouseUser,
     }    
   }
   
-  void playEvent(Node n) {
-    IMessage m = new FloatMessage( map(n.getX(),0,height,0,1), map(n.getY(),0,width,0,1), 0, 0, 0, 0);
+  void playEvent(Node n) {  
+    IMessage m = new FloatMessage( map(n.getX(),-width/2,width/2,0,1), map(n.getY(),height/2,-height/2,1,0), 0, 0, 0, 0);
     innerObservingBus.put(getChannel(),m);
     m = new BangMessage();
     innerObservingBus.put(getChannel(),m);
@@ -325,11 +326,22 @@ class KDiag extends BaseControlAutomaton implements IAutomatonToy, ICamouseUser,
   void postToBus() { 
 // TODO ... fill me
   }
-  void setChannel(int c) { channel = c; }
-  int  getChannel() { return channel; }
 
   String diagnostic() { return "KDiag"; }  
 }
  
   
+
+
+class ObInKDiag2ArtToys extends BaseObservingOSCInstrument {
+    ObInKDiag2ArtToys(String ip, int port, String path, int chan, IFreqStrategy fs, IBus bus) {
+      super(ip,port,path,chan,fs,bus);
+    }
+  
+    OscMessage makeMessage(int bang, float[] xs) {
+      float tone = makeCorrectedFreq(xs[1]);
+      float filter =  map(xs[0],0,1,0,1000);
+      return mFact.make(bang, tone, filter, xs[2],xs[3],xs[4]);
+    }
+}
 

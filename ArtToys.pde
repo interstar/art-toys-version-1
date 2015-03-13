@@ -34,5 +34,10 @@ abstract class BaseControlAutomaton implements IAutomatonToy {
   IBus innerObservingBus;
   void setBus(IBus bus) { innerObservingBus = bus; }
   IBus getBus() { return innerObservingBus; }
+
+  int channel;
+  void setChannel(int c) { channel = c; }
+  int  getChannel() { return channel; }
+
 }
 

@@ -50,7 +50,7 @@ class UncertainY implements IFreqStrategy {
   }
   
   float rawFreq(float y) {
-    return map(y, -high/2, high/2, 1000,0 ); 
+    return map(y, 0, 1, 1000,0 ); 
   }
   
   float corrected(float f) {

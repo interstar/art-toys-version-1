@@ -53,7 +53,7 @@ class CamHarp implements IAutomatonToy, ICamouseUser, IBlockWorld {
     CamHarp(PApplet pa, IBus bus) {
       this.pa = pa;
       sizeInSetup();
-      camouse = new Camouse(pa);
+      camouse = new Camouse(pa, bus);
       setBus(bus);
       reset();      
     }

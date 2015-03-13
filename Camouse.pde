@@ -33,7 +33,8 @@ class Camouse implements IObservable {
   IBus innerObservingBus;
   int channel;  
 
-  Camouse(PApplet applet) {
+  Camouse(PApplet applet, IBus bus) {
+    setBus(bus);
     video = globalVideo(applet);
     numPixels = video.width * video.height;
 
@@ -42,6 +43,7 @@ class Camouse implements IObservable {
     ys = new int[numPixels];
     loadPixels();
     v2 = mirror(video);
+    
   }
 
   PImage mirror(Capture video) {
