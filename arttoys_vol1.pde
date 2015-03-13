@@ -41,7 +41,11 @@ ZewpWorld makeZewpWorld() {
   for (int i=0;i<6;i++) {
     Zewp z = new Zewp(i, i, rnd.nextInt(im.width),rnd.nextInt(im.height-20), 0, 10, 2, color(255,255,200), im.width, im.height, mainBus );
     zewps.add(z);
-    instruments.add( new ObInZewp2ArtToys("localhost", 9004, "/channel"+i, i, fs, mainBus ) );
+    if (i % 2 == 0) {
+      instruments.add( new ObInZewp2ArtToys("localhost", 9004, "/channel"+i, i, fs, mainBus ) );
+    } else {
+      instruments.add( new ObInZewp2ArtToys2("localhost", 9004, "/channel"+i, i, fs, mainBus ) );      
+    }
   }
 
   
@@ -51,14 +55,15 @@ ZewpWorld makeZewpWorld() {
 KDiag makeKDiag() {
   IFreqStrategy fs = new UncertainY(height,20);
   nc.setCurrent("major");
+  
   instruments.add( new ObInKDiag2ArtToys("localhost", 9004, "/channel0", 0, fs, mainBus) );
   return new KDiag(this, 240,15,6, 0, mainBus);
 }
 
 void reset() {
   mainBus.reset();
-  toy = makeKDiag();
-  //toy = makeZewpWorld();
+  //toy = makeKDiag();
+  toy = makeZewpWorld();
   //toy = makeCamHarp();
   toy.reset();
   toy.sizeInSetup();  

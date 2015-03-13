@@ -268,4 +268,16 @@ class ObInZewp2ArtToys extends BaseObservingOSCInstrument {
     }
 }
 
+class ObInZewp2ArtToys2 extends BaseObservingOSCInstrument {
+    ObInZewp2ArtToys2(String ip, int port, String path, int chan, IFreqStrategy fs, IBus bus) {
+      super(ip,port,path,chan,fs,bus);
+    }
+  
+    OscMessage makeMessage(int bang, float[] xs) {
+      float tone = makeCorrectedFreq(xs[3]);
+      float filter =  map(xs[0],0,1,0,1000);
+      return mFact.make(bang, tone, filter, xs[2],xs[1],xs[4]);
+    }
+}
+
 
