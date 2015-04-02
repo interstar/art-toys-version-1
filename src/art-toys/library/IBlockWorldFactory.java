@@ -1,0 +1,4 @@
+
+interface IBlockWorldFactory {
+  IBlockWorld makeWorld();
+}

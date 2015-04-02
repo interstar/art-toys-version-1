@@ -1,0 +1,2 @@
+class NoSelectedBlockException extends Exception { }
+
