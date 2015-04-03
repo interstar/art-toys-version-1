@@ -1,0 +1,6 @@
+abstract class BaseMover extends BaseActor implements IMover {
+  float dx, dy;  
+  float getDX() { return dx; }
+  float getDY() { return dy; }
+}
+

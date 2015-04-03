@@ -1,0 +1,20 @@
+import java.util.*;
+
+class BaseBlockWorld extends AbstractBaseBlockWorld {
+  
+  BaseBlockWorld() {
+     _blocks = new ArrayList<IActor>();
+  }
+  // dummies because of interface
+  void sizeInSetup(){}
+  void struck(int x, int y) {}
+  void reset(){}
+  void nextStep(){}
+  void keyPressed(int key) {}
+  
+  void postToBus() {}
+  String diagnostic() { return "An instance of BaseBlockWorld"; }
+
+}
+
+

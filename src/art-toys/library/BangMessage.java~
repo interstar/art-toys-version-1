@@ -1,0 +1,7 @@
+public class BangMessage implements IMessage, IBangMessage {
+  boolean isBang() { return true; }
+  boolean isFloats() { return false; }
+  boolean isStrings() { return false; }
+  String toString() {  return "IMessage : BANG!"; }
+}
+
