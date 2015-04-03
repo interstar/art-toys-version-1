@@ -1,6 +1,0 @@
-public interface IMessage {
-  String toString();
-  boolean isBang();
-  boolean isFloats();
-  boolean isStrings();
-}

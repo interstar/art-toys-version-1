@@ -1,4 +1,0 @@
-interface IDiagnostic {
-  String diagnostic();
-}
-
