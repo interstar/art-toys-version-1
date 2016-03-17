@@ -1,3 +1,5 @@
+package arttoys.core;
+
 import java.util.*;
 
 public abstract class AbstractBaseBlockWorld extends BaseControlAutomaton implements IBlockWorld {
@@ -6,17 +8,21 @@ public abstract class AbstractBaseBlockWorld extends BaseControlAutomaton implem
   IActor _selectedBlock;
 
   IBus innerObservingBus;
-  
+
   public void draw() {
     for (IActor b : itBlocks()) { b.draw(); }
   }
-  
+
   public void addBlock(IActor block) { _blocks.add(block); }
-  
+
   public Iterable<IActor> itBlocks() {
-    return new IteratorCollection<IActor>(_blocks.iterator()); 
+    return new IteratorCollection<IActor>(_blocks.iterator());
   }
-  
+
+  public IActor nthBlock(int n) {
+    return _blocks.get(n);
+  }
+
   public void mousePressed(int mouseX, int mouseY) {
     for (IActor b : itBlocks()) {
       if (b.hit(mouseX,mouseY)) {
@@ -31,16 +37,16 @@ public abstract class AbstractBaseBlockWorld extends BaseControlAutomaton implem
     if (blockSelected()) {
       IActor selected = _selectedBlock;
       selected.setX(mouseX-(selected.getWidth()/2));
-      selected.setY(mouseY-(selected.getHeight()/2));   
-    }  
+      selected.setY(mouseY-(selected.getHeight()/2));
+    }
   }
-  
+
   public void mouseReleased() {
     _blockSelected = false;
   }
 
   public boolean blockSelected() {return _blockSelected; }
-  
+
   public IActor selectedBlock() throws NoSelectedBlockException {
     if (!blockSelected()) { throw new NoSelectedBlockException(); }
     return _selectedBlock;
@@ -50,6 +56,5 @@ public abstract class AbstractBaseBlockWorld extends BaseControlAutomaton implem
   public IBus getBus() { return innerObservingBus; }
   public void setChannel(int c)  {}
   public int  getChannel() { return 0; }
-    
-}
 
+}

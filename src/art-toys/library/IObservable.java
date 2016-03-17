@@ -1,6 +1,6 @@
+package arttoys.core;
+
 public interface IObservable extends IBusUser, IDiagnostic {
-  void setChannel(int channel);
-  int getChannel();
+  public void setChannel(int channel);
+  public int getChannel();
 }
-
-

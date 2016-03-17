@@ -1,2 +1,3 @@
-class NoSelectedBlockException extends Exception { }
+package arttoys.core;
 
+public class NoSelectedBlockException extends Exception { }

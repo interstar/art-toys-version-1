@@ -1,0 +1,20 @@
+package arttoys.core;
+
+public class BaseMusicObserver implements IMusicObserver {
+  IFreqStrategy freqStrat = new IdentityFreqStrategy();
+
+  public void setFreqStrategy(IFreqStrategy fs) {freqStrat = fs;}
+  public IFreqStrategy getFreqStrategy() { return freqStrat; }
+
+  public IBus observedBus;
+  public void setBus(IBus bus) { observedBus = bus; }
+  public IBus getBus() { return observedBus; }
+  public void postToBus() { }
+  public void scanBus() {}
+
+  public float makeCorrectedFreq(float y) { return freqStrat.corrected(freqStrat.rawFreq(y)); }
+
+  void playNote(float freq) {
+    // TODO something
+  }
+}

@@ -1,8 +1,10 @@
+package arttoys.core;
+
 import java.util.*;
 
-class BaseBlockWorld extends AbstractBaseBlockWorld {
-  
-  BaseBlockWorld() {
+public class BaseBlockWorld extends AbstractBaseBlockWorld {
+
+  public BaseBlockWorld() {
      _blocks = new ArrayList<IActor>();
   }
   // dummies because of interface
@@ -11,10 +13,8 @@ class BaseBlockWorld extends AbstractBaseBlockWorld {
   public void reset(){}
   public void nextStep(){}
   public void keyPressed(int key) {}
-  
+
   public void postToBus() {}
   public String diagnostic() { return "An instance of BaseBlockWorld"; }
 
 }
-
-

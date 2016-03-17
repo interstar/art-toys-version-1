@@ -1,4 +1,5 @@
+package arttoys.core;
 
-interface IBlockWorldFactory {
+public interface IBlockWorldFactory {
   IBlockWorld makeWorld();
 }

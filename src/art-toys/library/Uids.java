@@ -1,3 +1,5 @@
+package arttoys.core;
+
 public class Uids {
   private int id=-1;
   int next() {
@@ -5,4 +7,3 @@ public class Uids {
     return id;
   }
 }
-

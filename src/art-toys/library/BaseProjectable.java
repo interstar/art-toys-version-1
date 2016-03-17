@@ -1,3 +1,5 @@
+package arttoys.core;
+
 import processing.core.*;
 
 public abstract class BaseProjectable implements IProjectable {
@@ -30,12 +32,12 @@ public abstract class BaseProjectable implements IProjectable {
     float gradient(PVector start, PVector end) {
       return (end.y - start.y) / (end.x - start.x);
     }
-  
+
     float offset(PVector start, float grad) {
       return start.y - (grad * start.x);
     }
-  
-  
+
+
     PVector intersect(PVector line1_start, PVector line1_end, PVector line2_start, PVector line2_end) {
       float m1, a1, m2, a2;
       m1 = gradient(line1_start, line1_end);
@@ -51,7 +53,7 @@ public abstract class BaseProjectable implements IProjectable {
 
 
   public PVector trans(PVector invect) {
-    if (!isTransforming()) { 
+    if (!isTransforming()) {
       return invect;
     } // don't transform if a transform space hasn't been set up
 
@@ -98,7 +100,7 @@ public abstract class BaseProjectable implements IProjectable {
 
     // now we have the x_r and y_r  proportioned points on all the sides. Need to find where the two transversals cross
     /*
-    if (draw_boundaries) { 
+    if (draw_boundaries) {
       strokeWeight(1);
       stroke(255);
       line(mid_left.x,mid_left.y, mid_right.x,mid_right.y);
@@ -110,4 +112,3 @@ public abstract class BaseProjectable implements IProjectable {
 
   public abstract void draw();
 }
-

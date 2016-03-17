@@ -1,3 +1,5 @@
+package arttoys.core;
+
 public interface IMessage {
   public String toString();
   public boolean isBang();

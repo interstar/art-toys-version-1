@@ -1,4 +1,5 @@
-interface FilterTest<E> {
+package arttoys.core;
+
+public interface FilterTest<E> {
   boolean matches(E item);
 }
-

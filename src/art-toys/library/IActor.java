@@ -1,8 +1,10 @@
-public interface IActor {  
+package arttoys.core;
+
+public interface IActor {
   int getX();
   int getY();
   void setX(int x);
-  void setY(int y);  
+  void setY(int y);
   int getId();
   float fGetX();
   float fGetY();
@@ -10,8 +12,8 @@ public interface IActor {
 
   int getWidth();
   int getHeight();
-  
+
   int makeUid(Uids _ids);
-  
-  void draw();  
+
+  void draw();
 }
