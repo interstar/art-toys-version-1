@@ -1,4 +1,7 @@
+package arttoys.core;
+
 import java.util.*;
+
 public class IteratorCollection<E> implements Iterable<E> {
     private Iterator<E> it;
 
@@ -8,4 +11,3 @@ public class IteratorCollection<E> implements Iterable<E> {
     public Iterator<E> iterator() { return it; }
 
 }
-
