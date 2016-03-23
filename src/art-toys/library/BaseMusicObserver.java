@@ -1,6 +1,6 @@
 package arttoys.core;
 
-public class BaseMusicObserver implements IMusicObserver {
+public abstract class BaseMusicObserver implements IMusicObserver {
   IFreqStrategy freqStrat = new IdentityFreqStrategy();
 
   public void setFreqStrategy(IFreqStrategy fs) {freqStrat = fs;}
@@ -14,7 +14,5 @@ public class BaseMusicObserver implements IMusicObserver {
 
   public float makeCorrectedFreq(float y) { return freqStrat.corrected(freqStrat.rawFreq(y)); }
 
-  void playNote(float freq) {
-    // TODO something
-  }
+  public abstract void playNote(float freq);
 }
