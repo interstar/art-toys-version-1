@@ -1,5 +1,7 @@
-package arttoys.core;
+package arttoys.core.colors;
+import arttoys.core.Cycler;
 import processing.core.*;
+
 
 public class CyclingColor implements IColor {
     Cycler r,g,b,a;
