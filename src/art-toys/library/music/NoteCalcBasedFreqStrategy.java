@@ -1,4 +1,4 @@
-package arttoys.core;
+package arttoys.core.music;
 
 public class NoteCalcBasedFreqStrategy implements IFreqStrategy {
   INoteCalculator nc;

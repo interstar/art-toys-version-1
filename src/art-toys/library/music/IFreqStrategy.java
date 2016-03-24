@@ -1,4 +1,4 @@
-package arttoys.core;
+package arttoys.core.music;
 
 public interface IFreqStrategy {
   float rawFreq(float y); // turns the y parameter into a frequency

@@ -1,6 +1,7 @@
-package arttoys.core;
+package arttoys.core.music;
 
 import processing.core.*;
+
 import java.util.Map;
 import java.util.HashMap;
 

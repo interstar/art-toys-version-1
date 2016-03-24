@@ -1,4 +1,4 @@
-package arttoys.core;
+package arttoys.core.music;
 
 public class IdentityFreqStrategy implements IFreqStrategy {
   public float corrected(float f) { return f; }

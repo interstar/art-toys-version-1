@@ -1,4 +1,6 @@
-package arttoys.core;
+package arttoys.core.music;
+
+import arttoys.core.IBus;
 
 public abstract class BaseMusicObserver implements IMusicObserver {
   IFreqStrategy freqStrat = new IdentityFreqStrategy();

@@ -1,4 +1,6 @@
-package arttoys.core;
+package arttoys.core.music;
+
+import arttoys.core.IObservingController;
 
 public interface IMusicObserver extends IObservingController {
    void setFreqStrategy(IFreqStrategy fs);

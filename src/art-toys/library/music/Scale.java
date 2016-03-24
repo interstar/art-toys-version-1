@@ -1,4 +1,4 @@
-package arttoys.core;
+package arttoys.core.music;
 
 public class Scale {
     int[] scale;

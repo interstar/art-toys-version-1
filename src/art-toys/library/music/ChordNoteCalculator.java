@@ -1,4 +1,4 @@
-package arttoys.core;
+package arttoys.core.music;
 
 import java.util.Map;
 import java.util.HashMap;
