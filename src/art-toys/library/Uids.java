@@ -2,7 +2,7 @@ package arttoys.core;
 
 public class Uids {
   private int id=-1;
-  int next() {
+  public int next() {
     id++;
     return id;
   }

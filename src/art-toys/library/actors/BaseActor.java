@@ -1,4 +1,6 @@
-package arttoys.core;
+package arttoys.core.actors;
+
+import arttoys.core.Uids;
 
 public abstract class BaseActor implements IActor {
   public float x,y;

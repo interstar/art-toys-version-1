@@ -1,6 +1,7 @@
 package arttoys.core;
 
 import java.util.*;
+import arttoys.core.actors.IActor;
 
 public class BaseBlockWorld extends AbstractBaseBlockWorld {
 

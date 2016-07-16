@@ -2,6 +2,8 @@ package arttoys.core;
 
 import java.util.*;
 
+import arttoys.core.actors.IActor;
+
 public abstract class AbstractBaseBlockWorld extends BaseControlAutomaton implements IBlockWorld {
   ArrayList<IActor> _blocks;
   boolean _blockSelected;

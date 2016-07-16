@@ -1,5 +1,7 @@
 package arttoys.core;
 
+import arttoys.core.actors.IActor;
+
 public interface IBlockWorld extends IAutomatonToy {
   // blockworlds contain draggable / droppable blocks
   void mousePressed(int mouseX, int mouseY);

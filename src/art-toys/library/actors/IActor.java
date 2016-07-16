@@ -1,4 +1,6 @@
-package arttoys.core;
+package arttoys.core.actors;
+
+import arttoys.core.Uids;
 
 public interface IActor {
   int getX();

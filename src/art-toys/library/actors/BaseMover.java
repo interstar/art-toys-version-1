@@ -1,4 +1,4 @@
-package arttoys.core;
+package arttoys.core.actors;
 
 public abstract class BaseMover extends BaseActor implements IMover {
   float dx, dy;

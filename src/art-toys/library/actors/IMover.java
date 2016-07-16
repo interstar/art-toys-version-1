@@ -1,4 +1,4 @@
-package arttoys.core;
+package arttoys.core.actors;
 
 public interface IMover extends IActor {
   public void interact(Iterable<IActor> blocks, Iterable<IMover> movers);
