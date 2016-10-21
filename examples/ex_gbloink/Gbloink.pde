@@ -1,4 +1,8 @@
 
+import arttoys.core.actors.IMover;
+import arttoys.core.actors.IActor;
+
+import arttoys.core.actors.BaseMover;
 
 class Ball extends BaseMover implements IObservable, IMover {
   
@@ -7,6 +11,7 @@ class Ball extends BaseMover implements IObservable, IMover {
   Ball other;
   int rad;
   boolean bounced=false;
+  int id;
   
   Ball(int ch, color col, float x, float y, float dx, float dy, IBus bus) {
     setChannel(ch);
@@ -17,7 +22,10 @@ class Ball extends BaseMover implements IObservable, IMover {
     setDY(dy);
     this.colour = col;
     setBus(bus);
+    
   }
+  
+  int getId() { return getChannel(); }
 
   boolean outside(float n, int lim) {
     return ( (n < 0) || (n > lim) );
@@ -31,7 +39,7 @@ class Ball extends BaseMover implements IObservable, IMover {
    return close(x,y,ox,oy,rad*2);
   }  
   
-  void interact(Iterable<IActor> blocks, Iterable<IMover> balls ) { 
+  public void interact(Iterable<IActor> blocks, Iterable<IMover> balls ) { 
     bounced = false;
     int tx=(int)(x+getDX());
     int ty=(int)(y+getDY());
@@ -80,6 +88,10 @@ class Ball extends BaseMover implements IObservable, IMover {
   void interact(Iterable<IMover> balls ) {
   }
 
+  int getX() { return (int)x; }
+  int getY() { return (int)y; }
+  float fGetX() { return x; }
+  float fGetY() { return y; }
 
   void draw() {
     fill(colour);

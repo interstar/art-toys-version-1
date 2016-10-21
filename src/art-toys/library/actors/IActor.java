@@ -9,7 +9,7 @@ public interface IActor {
   void setY(int y);
   int getId();
   float fGetX();
-  float fGetY();
+  float fGetY();   
   boolean hit(int px, int py);
 
   int getWidth();
