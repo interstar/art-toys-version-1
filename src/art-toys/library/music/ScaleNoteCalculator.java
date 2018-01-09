@@ -5,8 +5,6 @@ import processing.core.*;
 import java.util.Map;
 import java.util.HashMap;
 
-
-
 public class ScaleNoteCalculator extends BaseNoteCalculator implements INoteCalculator {
   Map<String,Scale> scales;
 
