@@ -5,6 +5,10 @@ public class Scale {
 
     int transpose=0;
 
+    public Scale() {
+        scale = new int[] {1,1,1,1,1,1,1,1,1,1,1,1};
+    }
+
     public Scale(int[] s) {  scale = s;  }
 
     public int transform(int note) {
