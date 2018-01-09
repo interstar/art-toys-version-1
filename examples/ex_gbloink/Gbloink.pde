@@ -292,7 +292,7 @@ class GbloinkWorld extends BaseControlAutomaton implements IAutomatonToy, IBlock
     for (IMover b : balls) { b.draw(); }  
   }
   
-  void sizeInSetup() { size(wide,high);  }
+  void sizeInSetup() { }
 
   void addBlock(IActor block) { blocks.addBlock(block); }
   boolean blockSelected() { return blocks.blockSelected(); }
@@ -341,5 +341,3 @@ class ObInGbloink2ArtToys2 extends BaseObservingOSCInstrument {
       return mFact.make(bang, tone, filter, xs[2],xs[3],xs[4]);
     }
 }
-
-
