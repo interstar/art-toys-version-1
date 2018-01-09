@@ -1,8 +1,8 @@
 # Pure Data synth.
 
-A simple 6 voice monophonic synthesizer built with PureData, which is used to play the notes produced by the "music toys" in this Art Toys Example sketches.
+A simple 24 voice synthesizer built with PureData, which is used to play the notes produced by the "music toys" in this Art Toys Example sketches.
 
-Communication between Processing and PureData is over [Open Sound Control](http://en.wikipedia.org/wiki/Open_Sound_Control) so you will need [PureData Extended](http://puredata.info/downloads/pd-extended) which includes the Mrpeach library for OSC.
+Communication between Processing and PureData is over [Open Sound Control](http://en.wikipedia.org/wiki/Open_Sound_Control) so you will need [PurrData](https://puredata.info/downloads/purr-data) the latest extended version of PureData which includes the Mrpeach library for OSC.
 
 
 ## Getting Started
