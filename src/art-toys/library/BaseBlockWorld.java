@@ -9,7 +9,9 @@ public class BaseBlockWorld extends AbstractBaseBlockWorld {
      _blocks = new ArrayList<IActor>();
   }
   // dummies because of interface
-  public void sizeInSetup(){}
+
+  public int getRecommendedWidth() { return 100; }
+  public int getRecommendedHeight() { return 100; }
   public void struck(int x, int y) {}
   public void reset(){}
   public void nextStep(){}
