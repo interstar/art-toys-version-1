@@ -190,7 +190,8 @@ class StickyBalls extends BaseControlAutomaton implements IAutomatonToy {
 
   }
 
-  void sizeInSetup() { size(400,400); }
+  int getRecommendedHeight() {return 100;}
+  int getRecommendedWidth() {return 100;}
   
   void nextStep() {
     for (IMover b : balls) {
@@ -258,8 +259,8 @@ class GbloinkWorld extends BaseControlAutomaton implements IAutomatonToy, IBlock
   ArrayList<IMover> balls;
   BaseBlockWorld blocks; 
 
-  int wide=800;
-  int high=600;
+  int wide=width;
+  int high=height;
    
   ColorTool ct;
   
@@ -273,7 +274,7 @@ class GbloinkWorld extends BaseControlAutomaton implements IAutomatonToy, IBlock
 
   void reset() {    
     blocks = new BaseBlockWorld();
-    for (int i=0;i<wide;i=i+50) {
+    for (int i=0;i<wide;i=i+30) {
       addBlock(new GbloinkBlock(i,(int)(50+Math.random()*100),colorTool.randomColorGenerator(true)));
       addBlock(new GbloinkBlock(i,(int)(high-100+Math.random()*100),colorTool.randomColorGenerator(true)));
     }
@@ -292,7 +293,8 @@ class GbloinkWorld extends BaseControlAutomaton implements IAutomatonToy, IBlock
     for (IMover b : balls) { b.draw(); }  
   }
   
-  void sizeInSetup() { }
+  int getRecommendedHeight() { return height; }
+  int getRecommendedWidth() { return width; }
 
   void addBlock(IActor block) { blocks.addBlock(block); }
   boolean blockSelected() { return blocks.blockSelected(); }
