@@ -1,2 +1,6 @@
-# art-toys-version-1
-Consolidating some Processing sketches for interactive music into a single bundle
+# Art-Toys-Version-1
+
+This is a packaging of several useful classes for Processing sketches into a Processing library.
+
+
+
